@@ -19,4 +19,13 @@ namespace Adc
 
         return status;
     }
+
+    esp_err_t AdcChannel::read(int *readValue)
+    {
+        esp_err_t status{ESP_OK};
+
+        status |= adc_oneshot_read(_adc_unit.getHandle(), _adc_channel, readValue);
+
+        return status;
+    }
 }

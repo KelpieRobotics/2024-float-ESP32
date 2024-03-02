@@ -44,6 +44,8 @@ namespace Adc
             }
 
         [[nodiscard]] esp_err_t init(void);
+
+        esp_err_t read(int *readValue);
     };
 
 }
