@@ -8,18 +8,18 @@ namespace Gpio
     {
         protected:
             const gpio_num_t _pin;
-            const bool _invert_logic = false;
             const gpio_config_t _cfg;
+            const bool _invert_logic = false;
 
         public: 
             //gpio_num_t pin(void) const {return _pin;}
 
             constexpr GpioBase(const gpio_num_t pin, 
-                        const gpio_config_t& cfg, 
+                        const gpio_config_t& cfg, //should this be a reference? 
                         const bool invert_logic = false) :
                 _pin{pin}, 
-                _invert_logic{invert_logic},
-                _cfg{cfg}
+                _cfg{cfg},
+                _invert_logic{invert_logic}
             {
 
             }
