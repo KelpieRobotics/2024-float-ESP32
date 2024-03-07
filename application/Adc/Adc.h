@@ -11,7 +11,7 @@ namespace Adc
     class AdcUnit
     {
         protected:
-            adc_oneshot_unit_handle_t _unit_handle; //can't be const for some reason
+            adc_oneshot_unit_handle_t _unit_handle; 
             const adc_oneshot_unit_init_cfg_t _unit_cfg;
 
         public:
