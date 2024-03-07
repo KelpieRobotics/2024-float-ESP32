@@ -1,4 +1,6 @@
 #include "Adc.h"
+#include "esp_log.h"
+#define LOG_TAG "ADC"
 
 namespace Adc
 {
@@ -25,6 +27,8 @@ namespace Adc
         esp_err_t status{ESP_OK};
 
         status |= adc_oneshot_read(_adc_unit.getHandle(), _adc_channel, readValue);
+
+        ESP_LOGD(LOG_TAG, "ADC%d Channel %d: %d", _adc_unit.getConfig().unit_id, _adc_channel, *readValue);
 
         return status;
     }

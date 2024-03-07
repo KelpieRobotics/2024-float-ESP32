@@ -16,8 +16,8 @@ namespace Adc
 
         public:
 
-            constexpr AdcUnit(const adc_oneshot_unit_handle_t unit_handle, const adc_oneshot_unit_init_cfg_t& unit_cfg) : //change this to create a config like gpio by passing parameters
-                _unit_handle{unit_handle},
+            constexpr AdcUnit(const adc_oneshot_unit_init_cfg_t& unit_cfg) : //change this to create a config like gpio by passing parameters
+                _unit_handle{},
                 _unit_cfg{unit_cfg}
             {
                 
