@@ -6,4 +6,5 @@ idf_component_register(SRCS ${SOURCES}
                             freertos 
                             esp_common 
                             Gpio
-                            Adc)
+                            Adc
+                            Hbridge)
