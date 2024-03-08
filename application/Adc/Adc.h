@@ -5,7 +5,7 @@
 namespace Adc
 {
     /**
-     * Class build around the oneshot driver.
+     * Class built around the oneshot driver.
      * For our project we should only use ADC1 because ADC2 is in use by the wifi driver, however if needed adc_oneshot_read() is thread safe.
     */
     class AdcUnit
