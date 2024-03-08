@@ -2,6 +2,8 @@
 
 #include "esp_adc/adc_oneshot.h"
 
+#define ADC_ATTEN ADC_ATTEN_DB_12
+
 namespace Adc
 {
     /**
@@ -16,9 +18,13 @@ namespace Adc
 
         public:
 
-            constexpr AdcUnit(const adc_oneshot_unit_init_cfg_t& unit_cfg) : //change this to create a config like gpio by passing parameters
+            constexpr AdcUnit(adc_unit_t unit) : 
                 _unit_handle{},
-                _unit_cfg{unit_cfg}
+                _unit_cfg{
+                    .unit_id = unit,
+                    .clk_src = static_cast<adc_oneshot_clk_src_t>(0), //default clock source
+                    .ulp_mode = ADC_ULP_MODE_DISABLE
+                }
             {
                 
             }
@@ -35,10 +41,13 @@ namespace Adc
         adc_channel_t _adc_channel;
         const adc_oneshot_chan_cfg_t _chan_cfg;
 
-        constexpr AdcChannel(AdcUnit adc_unit, adc_channel_t adc_channel, const adc_oneshot_chan_cfg_t chan_cfg) : //change this to create a config like gpio by passing parameters
+        constexpr AdcChannel(AdcUnit adc_unit, adc_channel_t adc_channel) : //change this to create a config like gpio by passing parameters
             _adc_unit{adc_unit},
             _adc_channel{adc_channel},
-            _chan_cfg{chan_cfg}
+            _chan_cfg{
+                .atten = ADC_ATTEN,
+                .bitwidth = ADC_BITWIDTH_DEFAULT
+            }
             {
 
             }
