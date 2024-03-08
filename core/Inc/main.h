@@ -14,5 +14,5 @@ class Main final
         esp_err_t setup(void);
         void loop(void);
 
-    Hbridge::Hbridge h1 {(gpio_num_t)HBRIDGE_PIN_1, (gpio_num_t)HBRIDGE_PIN_2}; //this cast might be bad form
+    Hbridge::Hbridge h1 {static_cast<gpio_num_t>(HBRIDGE_PIN_1), static_cast<gpio_num_t>(HBRIDGE_PIN_2)}; 
 };
