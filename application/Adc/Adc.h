@@ -41,20 +41,22 @@ namespace Adc
         adc_channel_t _adc_channel;
         const adc_oneshot_chan_cfg_t _chan_cfg;
 
-        constexpr AdcChannel(AdcUnit adc_unit, adc_channel_t adc_channel) : //change this to create a config like gpio by passing parameters
-            _adc_unit{adc_unit},
-            _adc_channel{adc_channel},
-            _chan_cfg{
-                .atten = ADC_ATTEN,
-                .bitwidth = ADC_BITWIDTH_DEFAULT
-            }
-            {
+        public:
 
-            }
+            constexpr AdcChannel(AdcUnit adc_unit, adc_channel_t adc_channel) : //change this to create a config like gpio by passing parameters
+                _adc_unit{adc_unit},
+                _adc_channel{adc_channel},
+                _chan_cfg{
+                    .atten = ADC_ATTEN,
+                    .bitwidth = ADC_BITWIDTH_DEFAULT
+                }
+                {
 
-        [[nodiscard]] esp_err_t init(void);
+                }
 
-        esp_err_t read(int *readValue);
+            [[nodiscard]] esp_err_t init(void);
+
+            esp_err_t read(int *readValue);
     };
 
 }
