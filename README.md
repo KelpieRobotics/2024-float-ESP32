@@ -22,6 +22,6 @@ Mission routine
 
 ## Sources:
 [C++ ESP-IDF tutorial](https://www.youtube.com/watch?v=aczocIwZfZ4&list=PLowIV8ZSSsAWjoPJomVi_s1ZMghc9gNn9)
-    - Using GPIO class from above tutorial series
+    - Using GPIO class from this tutorial series
 
 [ESP-IDF documentation](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/index.html)
