@@ -23,14 +23,23 @@ esp_err_t Main::setup(void)
 
     status |= h1.init();
 
+    status |= adc_unit.init();
+
+    status |= pressure_sens.init();
+
     ESP_LOGI(LOG_TAG, "Setup status: %d", status);
     ESP_ERROR_CHECK(status);
+
+    pressure = 0;
 
     return status;
 }
 
 void Main::loop(void)
 {
+    pressure_sens.read(&pressure);
+    vTaskDelay(pdSECOND);
+    /*
     h1.setForwards();
     vTaskDelay(pdSECOND);
 
@@ -42,5 +51,5 @@ void Main::loop(void)
 
     h1.setOff();
     vTaskDelay(pdSECOND);
-
+    */
 }

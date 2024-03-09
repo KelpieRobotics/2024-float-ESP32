@@ -3,6 +3,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "Hbridge.h"
+#include "Adc.h"
 
 #define pdSECOND pdMS_TO_TICKS(1000)
 
@@ -22,4 +23,11 @@ class Main final
         void loop(void);
 
     Hbridge::Hbridge h1 {HBRIDGE_PIN_1, HBRIDGE_PIN_2}; 
+
+    Adc::AdcUnit adc_unit {ADC_UNIT};
+
+    Adc::AdcChannel pressure_sens {adc_unit, PRESSURE_SENS_PIN};
+
+    int pressure;
+
 };
