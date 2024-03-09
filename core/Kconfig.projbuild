@@ -5,17 +5,42 @@ menu "Hbidge Configuration"
     config HBRIDGE_PIN_1
         int "Hbridge output pin 1"
         range ENV_GPIO_RANGE_MIN ENV_GPIO_OUT_RANGE_MAX
-        default 8 if IDF_TARGET_ESP32C2 || IDF_TARGET_ESP32H2
-        default 18
+        default 34
         help
-            GPIO pin number to be used as GPIO_OUTPUT_IO_0.
+            GPIO number to be used as Hbridge pin 1. See board docs for GPIO number to physical pin mapping.
 
     config HBRIDGE_PIN_2
         int "Hbridge output pin 2"
         range ENV_GPIO_RANGE_MIN ENV_GPIO_OUT_RANGE_MAX
-        default 9 if IDF_TARGET_ESP32C2 || IDF_TARGET_ESP32H2
-        default 19
+        default 35
         help
-            GPIO pin number to be used as GPIO_OUTPUT_IO_1.
+            GPIO number to be used as Hbridge pin 1. See board docs for GPIO number to physical pin mapping.
+
+endmenu
+
+menu "ADC Configuration"
+
+    orsource "$IDF_PATH/examples/common_components/env_caps/$IDF_TARGET/Kconfig.env_caps"
+
+    config ADC_UNIT
+        int "ADC unit"
+        range 0 1
+        default 0
+        help
+            Selects which ADC unit to use, 0 = ADC1, 1 = ADC2. ADC2 is used by wifi driver so 1 is reccomended.
+
+    config LEAK_SENS_PIN
+        int "Leak sensor channel"
+        range 0 9
+        default 0
+        help
+            ADC channel for leak sensor. See board docs for channel to physical pin mapping.
+
+    config PRESSURE_SENS_PIN
+        int "Pressure sensor channel"
+        range 0 9
+        default 1
+        help
+            ADC channel for pressure sensor. See board docs for channel to physical pin mapping.
 
 endmenu

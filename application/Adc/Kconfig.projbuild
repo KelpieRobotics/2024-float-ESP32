@@ -1,0 +1,13 @@
+menu "ADC Attenuation Configuration"
+
+    orsource "$IDF_PATH/examples/common_components/env_caps/$IDF_TARGET/Kconfig.env_caps"
+
+    config ADC_ATTEN
+        int "ADC Attenuation"
+        range 0 3
+        default 3
+        help
+            Specify ADC attenuation, 0 no attn, 1=2.5 dB, 2 = 6 dB, 3 = 12dB
+            
+
+endmenu

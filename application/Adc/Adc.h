@@ -2,7 +2,7 @@
 
 #include "esp_adc/adc_oneshot.h"
 
-#define ADC_ATTEN ADC_ATTEN_DB_12
+#define ADC_ATTEN static_cast<adc_atten_t>(CONFIG_ADC_ATTEN)
 
 namespace Adc
 {

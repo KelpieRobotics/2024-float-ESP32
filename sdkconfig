@@ -381,6 +381,18 @@ CONFIG_HBRIDGE_PIN_2=17
 # end of Hbidge Configuration
 
 #
+# ADC Configuration
+#
+CONFIG_ADC_UNIT=0
+# end of ADC Configuration
+
+#
+# ADC Attenuation Configuration
+#
+CONFIG_ADC_ATTEN=3
+# end of ADC Attenuation Configuration
+
+#
 # Compiler options
 #
 CONFIG_COMPILER_OPTIMIZATION_DEBUG=y
