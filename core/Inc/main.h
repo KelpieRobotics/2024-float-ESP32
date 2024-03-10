@@ -26,7 +26,7 @@ class Main final
 
         Adc::AdcUnit adc_unit {ADC_UNIT};
 
-        Adc::AdcChannel pressure_sens {adc_unit, PRESSURE_SENS_PIN};
+        Adc::AdcChannel pressure_sens {&adc_unit, PRESSURE_SENS_PIN};
 
         int pressure;
 

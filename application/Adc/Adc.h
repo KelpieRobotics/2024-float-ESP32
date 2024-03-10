@@ -38,13 +38,13 @@ namespace Adc
     class AdcChannel
     {
         protected:
-            AdcUnit _adc_unit;
+            AdcUnit *_adc_unit;
             adc_channel_t _adc_channel;
             const adc_oneshot_chan_cfg_t _chan_cfg;
 
         public:
 
-            constexpr AdcChannel(AdcUnit adc_unit, adc_channel_t adc_channel) : //change this to create a config like gpio by passing parameters
+            constexpr AdcChannel(AdcUnit *adc_unit, adc_channel_t adc_channel) : //change this to create a config like gpio by passing parameters
                 _adc_unit{adc_unit},
                 _adc_channel{adc_channel},
                 _chan_cfg{

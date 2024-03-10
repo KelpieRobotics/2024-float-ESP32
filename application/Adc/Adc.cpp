@@ -27,7 +27,7 @@ namespace Adc
     {
         esp_err_t status{ESP_OK};
 
-        status |= adc_oneshot_config_channel(_adc_unit.getHandle(), _adc_channel, &_chan_cfg);
+        status |= adc_oneshot_config_channel(_adc_unit->getHandle(), _adc_channel, &_chan_cfg);
 
         return status;
     }
@@ -36,9 +36,9 @@ namespace Adc
     {
         esp_err_t status{ESP_OK};
 
-        status |= adc_oneshot_read(_adc_unit.getHandle(), _adc_channel, readValue);
+        status |= adc_oneshot_read(_adc_unit->getHandle(), _adc_channel, readValue);
 
-        ESP_LOGD(LOG_TAG, "ADC%d Channel %d: %d", _adc_unit.getConfig().unit_id, _adc_channel, *readValue);
+        ESP_LOGD(LOG_TAG, "ADC%d Channel %d: %d", _adc_unit->getConfig().unit_id, _adc_channel, *readValue);
 
         return status;
     }
