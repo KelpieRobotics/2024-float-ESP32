@@ -15,24 +15,31 @@ namespace I2c
     class I2cController
     {
         protected:
-            const int _ctrl_port;
+            const i2c_port_t _ctrl_port;
             const i2c_config_t _cfg;
 
         public:
             constexpr I2cController() :
+                _ctrl_port{I2C_MASTER_NUM},
                 _cfg{
                     .mode = I2C_MODE_MASTER,
                     .sda_io_num = I2C_MASTER_SDA_IO,
                     .scl_io_num = I2C_MASTER_SCL_IO,
                     .sda_pullup_en = GPIO_PULLUP_ENABLE,
                     .scl_pullup_en = GPIO_PULLUP_ENABLE,
-                    .master.clk_speed = I2C_MASTER_FREQ_HZ,
+                    .master{I2C_MASTER_FREQ_HZ}
                 }
             {
 
             }
 
-        [[nodiscard]] esp_err_t init(void);
+            [[nodiscard]] esp_err_t init(void);
     };
+
+    /*class I2cTarget
+    {
+        protected:
+            
+    }*/
 }
 

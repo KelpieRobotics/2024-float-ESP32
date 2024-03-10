@@ -6,9 +6,9 @@ namespace I2c
     {
         esp_err_t status {ESP_OK};
 
-        status |= i2c_param_config(I2C_MASTER_NUM, &_cfg);
+        status |= i2c_param_config(_ctrl_port, &_cfg);
 
-        status |= i2c_driver_install(I2C_MASTER_NUM, _cfg.mode, I2C_MASTER_RX_BUF_DISABLE, I2C_MASTER_TX_BUF_DISABLE, 0);
+        status |= i2c_driver_install(_ctrl_port, _cfg.mode, I2C_MASTER_RX_BUF_DISABLE, I2C_MASTER_TX_BUF_DISABLE, 0);
 
         return status;
     }
