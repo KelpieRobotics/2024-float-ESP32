@@ -37,9 +37,10 @@ namespace Adc
 
     class AdcChannel
     {
-        AdcUnit _adc_unit;
-        adc_channel_t _adc_channel;
-        const adc_oneshot_chan_cfg_t _chan_cfg;
+        protected:
+            AdcUnit _adc_unit;
+            adc_channel_t _adc_channel;
+            const adc_oneshot_chan_cfg_t _chan_cfg;
 
         public:
 
