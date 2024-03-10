@@ -2,7 +2,7 @@
 
 #include "esp_adc/adc_oneshot.h"
 
-#define ADC_ATTEN static_cast<adc_atten_t>(CONFIG_ADC_ATTEN)
+#define ADC_ATTEN static_cast<adc_atten_t>(CONFIG_ADC_ATTEN) //make this a default parameter, same with ADC unit 1
 
 namespace Adc
 {
