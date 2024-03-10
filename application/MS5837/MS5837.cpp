@@ -1,11 +1,12 @@
 #include "MS5837.h"
+#include "math.h"
 #include "esp_log.h"
 
 #define LOG_TAG "MS5837"
 
 namespace MS5837
 {    
-    const uint8_t MS5837_ADDR = 0x76;
+    //const uint8_t MS5837_ADDR = 0x76;
     const uint8_t MS5837_RESET = 0x1E;
     const uint8_t MS5837_ADC_READ = 0x00;
     const uint8_t MS5837_PROM_READ = 0xA0;
@@ -34,12 +35,13 @@ namespace MS5837
         // Wait for reset to complete
         vTaskDelay(pdMS_TO_TICKS(10));  //if there's errors this delay is a good place to start
 
-        // Read calibration values and CRC
+        // Read calibration values
         for ( uint8_t i = 0 ; i < 7 ; i++ ) {
             const uint8_t w_buf = MS5837_PROM_READ+i*2;
             uint8_t r_buf[2] = {0};
             //status |= i2c_master_write_to_device(_i2c_ctrl->getPort(), _dev_addr, &buf, sizeof(buf), pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
 
+            //This method does a write and then a read, so we write which PROM address we want and then read it from the device
             status |= i2c_master_write_read_device(_i2c_ctrl->getPort(), _dev_addr, &w_buf, sizeof(w_buf), r_buf, sizeof(r_buf), pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
 
             // This is weird. The C[i] entry is uint16_t (2 bytes) but the i2c read only takes uint8_t buffer.
@@ -52,9 +54,11 @@ namespace MS5837
         uint8_t crcCalculated = crc4(C);
 
         if ( crcCalculated != crcRead ) {
-            ESP_LOGD(LOG_TAG, "init CRC check fail");
+            ESP_LOGD(LOG_TAG, "CRC fail");
             return (status |= ESP_FAIL);
         }
+
+        ESP_LOGD(LOG_TAG, "CRC pass");
 
         uint8_t version = (C[0] >> 5) & 0x7F; // Extract the sensor version from PROM Word 0
 
@@ -95,48 +99,41 @@ namespace MS5837
         fluidDensity = density;
     }
 
-    void MS5837::read() {
-        //Check that _i2cPort is not NULL (i.e. has the user forgoten to call .init or .begin?)
-        if (_i2cPort == NULL)
-        {
-            return;
-        }
+    esp_err_t MS5837::read() {
 
-        // Request D1 conversion
-        _i2cPort->beginTransmission(MS5837_ADDR);
-        _i2cPort->write(MS5837_CONVERT_D1_8192);
-        _i2cPort->endTransmission();
+        esp_err_t status{ESP_OK};
 
-        delay(20); // Max conversion time per datasheet
+        status |= i2c_master_write_to_device(_i2c_ctrl->getPort(), _dev_addr, &MS5837_CONVERT_D1_8192, sizeof(MS5837_CONVERT_D1_8192), pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
 
-        _i2cPort->beginTransmission(MS5837_ADDR);
-        _i2cPort->write(MS5837_ADC_READ);
-        _i2cPort->endTransmission();
+        vTaskDelay(pdMS_TO_TICKS(20));  // Max conversion time per datasheet
 
-        _i2cPort->requestFrom(MS5837_ADDR,3);
+        status |= i2c_master_write_to_device(_i2c_ctrl->getPort(), _dev_addr, &MS5837_ADC_READ, sizeof(MS5837_ADC_READ), pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
+
+        uint8_t r_buf[3] = {0};
+        i2c_master_read_from_device(_i2c_ctrl->getPort(), _dev_addr, r_buf, 3, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
+
+        //_i2cPort->requestFrom(MS5837_ADDR,3);
         D1_pres = 0;
-        D1_pres = _i2cPort->read();
-        D1_pres = (D1_pres << 8) | _i2cPort->read();
-        D1_pres = (D1_pres << 8) | _i2cPort->read();
+        D1_pres = r_buf[0];
+        D1_pres = (D1_pres << 8) | r_buf[1];
+        D1_pres = (D1_pres << 8) | r_buf[2];
 
-        // Request D2 conversion
-        _i2cPort->beginTransmission(MS5837_ADDR);
-        _i2cPort->write(MS5837_CONVERT_D2_8192);
-        _i2cPort->endTransmission();
+        status |= i2c_master_write_to_device(_i2c_ctrl->getPort(), _dev_addr, &MS5837_CONVERT_D2_8192, sizeof(MS5837_CONVERT_D1_8192), pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
 
-        delay(20); // Max conversion time per datasheet
+        vTaskDelay(pdMS_TO_TICKS(20));  // Max conversion time per datasheet
 
-        _i2cPort->beginTransmission(MS5837_ADDR);
-        _i2cPort->write(MS5837_ADC_READ);
-        _i2cPort->endTransmission();
+        r_buf[0] = r_buf[1] = r_buf[2] = 0;
+        status |= i2c_master_write_to_device(_i2c_ctrl->getPort(), _dev_addr, &MS5837_ADC_READ, sizeof(MS5837_ADC_READ), pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
 
-        _i2cPort->requestFrom(MS5837_ADDR,3);
+        //_i2cPort->requestFrom(MS5837_ADDR,3);
         D2_temp = 0;
-        D2_temp = _i2cPort->read();
-        D2_temp = (D2_temp << 8) | _i2cPort->read();
-        D2_temp = (D2_temp << 8) | _i2cPort->read();
+        D2_temp = r_buf[0];
+        D2_temp = (D2_temp << 8) | r_buf[1];
+        D2_temp = (D2_temp << 8) | r_buf[2];
 
         calculate();
+
+        return status;
     }
 
     void MS5837::calculate() {
