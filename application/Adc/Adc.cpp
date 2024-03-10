@@ -13,6 +13,16 @@ namespace Adc
         return status;
     }
 
+    adc_oneshot_unit_handle_t AdcUnit::getHandle(void)
+    {
+        return _unit_handle;
+    }
+
+    adc_oneshot_unit_init_cfg_t AdcUnit::getConfig(void)
+    {
+        return _unit_cfg;
+    }
+
     [[nodiscard]] esp_err_t AdcChannel::init(void)
     {
         esp_err_t status{ESP_OK};
