@@ -44,3 +44,15 @@ menu "ADC Configuration"
             ADC channel for pressure sensor. See board docs for channel to physical pin mapping.
 
 endmenu
+
+menu "I2C Device Configuration"
+
+    orsource "$IDF_PATH/examples/common_components/env_caps/$IDF_TARGET/Kconfig.env_caps"
+
+    config PRESSURE_SENS_ADDR
+        hex "Pressure sensor I2C address"
+        default 0x76
+        help
+            I2C address oft the pressure sensor.
+
+endmenu
