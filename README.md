@@ -9,10 +9,12 @@ Configurable through ESP-IDF menuconfig.
 ### Currently working: 
 GPIO digital output
 
-### Needs testing: 
 ADC reading
+### Needs testing: 
 
 ### Needs implementation: 
+I2C sensor class
+
 Wifi
 
 Leak ISR
