@@ -12,4 +12,9 @@ namespace I2c
 
         return status;
     }
+
+    i2c_port_t I2cController::getPort(void)
+    {
+        return _ctrl_port;
+    }
 }

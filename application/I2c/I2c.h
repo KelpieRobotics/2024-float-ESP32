@@ -15,7 +15,7 @@ namespace I2c
     class I2cController
     {
         protected:
-            const i2c_port_t _ctrl_port;
+            i2c_port_t _ctrl_port; //should this be const?
             const i2c_config_t _cfg;
 
         public:
@@ -34,22 +34,28 @@ namespace I2c
             }
 
             [[nodiscard]] esp_err_t init(void);
+            
+            i2c_port_t getPort(void);
     };
 
     class I2cTarget
     {
         protected:
-            uint8_t _dev_addr;
+            const uint8_t _dev_addr;
+            I2cController *_i2c_ctrl;
 
         public:
 
-            constexpr I2cTarget(const uint8_t dev_addr) :
-                _dev_addr{dev_addr}
+            constexpr I2cTarget(const uint8_t dev_addr, I2cController *i2c_ctrl) :
+                _dev_addr{dev_addr},
+                _i2c_ctrl{i2c_ctrl}
             {
 
             }
+
+
             
-            virtual esp_err_t init() =0;
+            virtual esp_err_t init(void) =0;
             virtual esp_err_t read() =0;
             virtual esp_err_t write() =0;
     };

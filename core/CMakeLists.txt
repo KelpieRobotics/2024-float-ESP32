@@ -8,4 +8,5 @@ idf_component_register(SRCS ${SOURCES}
                             Gpio
                             Adc
                             Hbridge
-                            I2c)
+                            I2c
+                            MS5837)

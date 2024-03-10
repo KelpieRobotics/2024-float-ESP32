@@ -27,3 +27,6 @@ Mission routine
     - Using GPIO class from this tutorial series
 
 [ESP-IDF documentation](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/index.html)
+
+[MS5837 driver](https://github.com/bluerobotics/BlueRobotics_MS5837_Library)
+    - Arduino driver adapted for ESP-IDF
