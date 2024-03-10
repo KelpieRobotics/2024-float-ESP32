@@ -37,7 +37,17 @@ esp_err_t Main::setup(void)
 
 void Main::loop(void)
 {
-    pressure_sens.read(&pressure);
+    //pressure_sens.read(&pressure);
+
+    ESP_LOGD(LOG_TAG, "size of uint8_t: %d", sizeof(uint8_t));
+    ESP_LOGD(LOG_TAG, "size of const uint8_t: %d", sizeof(const uint8_t));
+
+    ESP_LOGD(LOG_TAG, "size of uint16_t: %d", sizeof(uint16_t));
+    ESP_LOGD(LOG_TAG, "size of const uint16_t: %d", sizeof(const uint16_t));
+
+    uint8_t r_buf[2] = {0};
+    ESP_LOGD(LOG_TAG, "size of buf: %d", sizeof(r_buf));
+
     vTaskDelay(pdSECOND);
     /*
     h1.setForwards();

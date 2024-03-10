@@ -31,7 +31,7 @@ namespace MS5837
         esp_err_t status {ESP_OK};
 
         // Reset the MS5837, per datasheet
-        status |= i2c_master_write_to_device(_i2c_ctrl->getPort(), _dev_addr, &MS5837_RESET, sizeof(MS5837_RESET), pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
+        status |= i2c_master_write_to_device(_i2c_ctrl->getPort(), _dev_addr, &MS5837_RESET, 1, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
         // Wait for reset to complete
         vTaskDelay(pdMS_TO_TICKS(10));  //if there's errors this delay is a good place to start
 
@@ -42,11 +42,12 @@ namespace MS5837
             //status |= i2c_master_write_to_device(_i2c_ctrl->getPort(), _dev_addr, &buf, sizeof(buf), pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
 
             //This method does a write and then a read, so we write which PROM address we want and then read it from the device
-            status |= i2c_master_write_read_device(_i2c_ctrl->getPort(), _dev_addr, &w_buf, sizeof(w_buf), r_buf, sizeof(r_buf), pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
+            status |= i2c_master_write_read_device(_i2c_ctrl->getPort(), _dev_addr, &w_buf, 1, r_buf, 2, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
 
             // This is weird. The C[i] entry is uint16_t (2 bytes) but the i2c read only takes uint8_t buffer.
             // Logic is that the first byte will be in r_buf[0], so shift it by 8 to the MSB and or it with the next byte read.
-            C[i] = (static_cast<uint16_t>(r_buf[0]) << 8 | r_buf[1]); 
+            C[i] = r_buf[0];
+            C[i] = (C[i] << 8) | r_buf[1];
         }
 
         // Verify that data is correct with CRC
@@ -103,27 +104,35 @@ namespace MS5837
 
         esp_err_t status{ESP_OK};
 
-        status |= i2c_master_write_to_device(_i2c_ctrl->getPort(), _dev_addr, &MS5837_CONVERT_D1_8192, sizeof(MS5837_CONVERT_D1_8192), pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
+        // Request D1 conversion
+        status |= i2c_master_write_to_device(_i2c_ctrl->getPort(), _dev_addr, &MS5837_CONVERT_D1_8192, 1, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
 
         vTaskDelay(pdMS_TO_TICKS(20));  // Max conversion time per datasheet
 
-        status |= i2c_master_write_to_device(_i2c_ctrl->getPort(), _dev_addr, &MS5837_ADC_READ, sizeof(MS5837_ADC_READ), pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
+        //request ADC read
+        status |= i2c_master_write_to_device(_i2c_ctrl->getPort(), _dev_addr, &MS5837_ADC_READ, 1, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
 
+        //get values read
         uint8_t r_buf[3] = {0};
         i2c_master_read_from_device(_i2c_ctrl->getPort(), _dev_addr, r_buf, 3, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
 
-        //_i2cPort->requestFrom(MS5837_ADDR,3);
+        //build final value up from resulting 3 bytes
         D1_pres = 0;
         D1_pres = r_buf[0];
         D1_pres = (D1_pres << 8) | r_buf[1];
         D1_pres = (D1_pres << 8) | r_buf[2];
 
-        status |= i2c_master_write_to_device(_i2c_ctrl->getPort(), _dev_addr, &MS5837_CONVERT_D2_8192, sizeof(MS5837_CONVERT_D1_8192), pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
+        //request D2 conversion
+        status |= i2c_master_write_to_device(_i2c_ctrl->getPort(), _dev_addr, &MS5837_CONVERT_D2_8192, 1, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
 
         vTaskDelay(pdMS_TO_TICKS(20));  // Max conversion time per datasheet
 
+        //request ADC read
+        status |= i2c_master_write_to_device(_i2c_ctrl->getPort(), _dev_addr, &MS5837_ADC_READ, 1, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
+
+        //get values read
         r_buf[0] = r_buf[1] = r_buf[2] = 0;
-        status |= i2c_master_write_to_device(_i2c_ctrl->getPort(), _dev_addr, &MS5837_ADC_READ, sizeof(MS5837_ADC_READ), pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
+        i2c_master_read_from_device(_i2c_ctrl->getPort(), _dev_addr, r_buf, 3, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
 
         //_i2cPort->requestFrom(MS5837_ADDR,3);
         D2_temp = 0;
