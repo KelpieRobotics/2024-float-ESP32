@@ -23,14 +23,16 @@ esp_err_t Main::setup(void)
 
     status |= h1.init();
 
-    status |= adc_unit.init();
+    //status |= adc_unit.init();
 
-    status |= pressure_sens.init();
+    //status |= pressure_sens.init();
+
+    status |= i2c_ctrl.init();
+
+    status |= psi_snsr.init();
 
     ESP_LOGI(LOG_TAG, "Setup status: %d", status);
     ESP_ERROR_CHECK(status);
-
-    pressure = 0;
 
     return status;
 }
@@ -39,14 +41,23 @@ void Main::loop(void)
 {
     //pressure_sens.read(&pressure);
 
-    ESP_LOGD(LOG_TAG, "size of uint8_t: %d", sizeof(uint8_t));
-    ESP_LOGD(LOG_TAG, "size of const uint8_t: %d", sizeof(const uint8_t));
+    ESP_ERROR_CHECK(psi_snsr.read());
 
-    ESP_LOGD(LOG_TAG, "size of uint16_t: %d", sizeof(uint16_t));
-    ESP_LOGD(LOG_TAG, "size of const uint16_t: %d", sizeof(const uint16_t));
+    pressure = psi_snsr.pressure();
 
-    uint8_t r_buf[2] = {0};
-    ESP_LOGD(LOG_TAG, "size of buf: %d", sizeof(r_buf));
+    temp = psi_snsr.temperature();
+
+    depth = psi_snsr.depth();
+
+    altitude = psi_snsr.altitude();
+
+    ESP_LOGD(LOG_TAG, "Pressure: %f", pressure);
+
+    ESP_LOGD(LOG_TAG, "Temperature: %f", temp);
+
+    ESP_LOGD(LOG_TAG, "Depth: %f", depth);
+
+    ESP_LOGD(LOG_TAG, "Altitude: %f", altitude);
 
     vTaskDelay(pdSECOND);
     /*
