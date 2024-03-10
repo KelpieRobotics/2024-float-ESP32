@@ -1,5 +1,5 @@
 #include "MS5837.h"
-#include "math.h"
+#include "cmath"
 #include "esp_log.h"
 
 #define LOG_TAG "MS5837"
@@ -55,7 +55,7 @@ namespace MS5837
         uint8_t crcCalculated = crc4(C);
 
         if ( crcCalculated != crcRead ) {
-            ESP_LOGD(LOG_TAG, "CRC fail");
+            ESP_LOGI(LOG_TAG, "CRC fail");
             return (status |= ESP_FAIL);
         }
 
