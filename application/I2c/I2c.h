@@ -52,12 +52,10 @@ namespace I2c
             {
 
             }
-
-
             
-            virtual esp_err_t init(void) =0;
+            [[nodiscard]] virtual esp_err_t init(void) =0;
             virtual esp_err_t read() =0;
-            virtual esp_err_t write() =0;
+            //virtual esp_err_t write() =0;
     };
 }
 
