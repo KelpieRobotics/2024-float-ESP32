@@ -22,12 +22,12 @@ class Main final
         esp_err_t setup(void);
         void loop(void);
 
-    Hbridge::Hbridge h1 {HBRIDGE_PIN_1, HBRIDGE_PIN_2}; 
+        Hbridge::Hbridge h1 {HBRIDGE_PIN_1, HBRIDGE_PIN_2}; 
 
-    Adc::AdcUnit adc_unit {ADC_UNIT};
+        Adc::AdcUnit adc_unit {ADC_UNIT};
 
-    Adc::AdcChannel pressure_sens {adc_unit, PRESSURE_SENS_PIN};
+        Adc::AdcChannel pressure_sens {adc_unit, PRESSURE_SENS_PIN};
 
-    int pressure;
+        int pressure;
 
 };

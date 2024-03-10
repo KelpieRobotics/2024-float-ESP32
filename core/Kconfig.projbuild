@@ -5,14 +5,14 @@ menu "Hbidge Configuration"
     config HBRIDGE_PIN_1
         int "Hbridge output pin 1"
         range ENV_GPIO_RANGE_MIN ENV_GPIO_OUT_RANGE_MAX
-        default 34
+        default 32
         help
             GPIO number to be used as Hbridge pin 1. See board docs for GPIO number to physical pin mapping.
 
     config HBRIDGE_PIN_2
         int "Hbridge output pin 2"
         range ENV_GPIO_RANGE_MIN ENV_GPIO_OUT_RANGE_MAX
-        default 35
+        default 33
         help
             GPIO number to be used as Hbridge pin 1. See board docs for GPIO number to physical pin mapping.
 
