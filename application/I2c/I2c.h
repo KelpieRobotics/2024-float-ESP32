@@ -36,10 +36,22 @@ namespace I2c
             [[nodiscard]] esp_err_t init(void);
     };
 
-    /*class I2cTarget
+    class I2cTarget
     {
         protected:
+            uint8_t _dev_addr;
+
+        public:
+
+            constexpr I2cTarget(const uint8_t dev_addr) :
+                _dev_addr{dev_addr}
+            {
+
+            }
             
-    }*/
+            virtual esp_err_t init() =0;
+            virtual esp_err_t read() =0;
+            virtual esp_err_t write() =0;
+    };
 }
 
