@@ -11,9 +11,9 @@ GPIO digital output
 
 ADC reading
 ### Needs testing: 
+I2C sensor class
 
 ### Needs implementation: 
-I2C sensor class
 
 Wifi
 
