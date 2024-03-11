@@ -10,10 +10,14 @@ Configurable through ESP-IDF menuconfig.
 GPIO digital output
 
 ADC reading
-### Needs testing: 
-I2C sensor class
+
+I2C init
+### Needs testing/fix: 
+I2C read
 
 ### Needs implementation: 
+
+Migrate to new i2c master driver
 
 Wifi
 

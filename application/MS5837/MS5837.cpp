@@ -55,11 +55,11 @@ namespace MS5837
         uint8_t crcCalculated = crc4(C);
 
         if ( crcCalculated != crcRead ) {
-            ESP_LOGI(LOG_TAG, "CRC fail");
+            ESP_LOGI(LOG_TAG, "CRC FAIL");
             return (status |= ESP_FAIL);
         }
 
-        ESP_LOGD(LOG_TAG, "CRC pass");
+        ESP_LOGD(LOG_TAG, "CRC OK!");
 
         uint8_t version = (C[0] >> 5) & 0x7F; // Extract the sensor version from PROM Word 0
 
@@ -107,7 +107,7 @@ namespace MS5837
         // Request D1 conversion
         status |= i2c_master_write_to_device(_i2c_ctrl->getPort(), _dev_addr, &MS5837_CONVERT_D1_8192, 1, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
 
-        vTaskDelay(pdMS_TO_TICKS(20));  // Max conversion time per datasheet
+        vTaskDelay(pdMS_TO_TICKS(30));  // Max conversion time per datasheet is 20ms, but for some reason this wasn't enough here
 
         //request ADC read
         status |= i2c_master_write_to_device(_i2c_ctrl->getPort(), _dev_addr, &MS5837_ADC_READ, 1, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
@@ -125,7 +125,7 @@ namespace MS5837
         //request D2 conversion
         status |= i2c_master_write_to_device(_i2c_ctrl->getPort(), _dev_addr, &MS5837_CONVERT_D2_8192, 1, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
 
-        vTaskDelay(pdMS_TO_TICKS(20));  // Max conversion time per datasheet
+        vTaskDelay(pdMS_TO_TICKS(30));  // Max conversion time per datasheet is 20ms, but for some reason this wasn't enough here
 
         //request ADC read
         status |= i2c_master_write_to_device(_i2c_ctrl->getPort(), _dev_addr, &MS5837_ADC_READ, 1, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));

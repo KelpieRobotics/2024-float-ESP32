@@ -57,7 +57,7 @@ void Main::loop(void)
 
     ESP_LOGD(LOG_TAG, "Depth: %f", depth);
 
-    ESP_LOGD(LOG_TAG, "Altitude: %f", altitude);
+    ESP_LOGD(LOG_TAG, "Altitude: %f\n", altitude);
 
     vTaskDelay(pdSECOND);
     /*
