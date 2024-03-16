@@ -9,6 +9,13 @@ static Main my_main;
 
 extern "C" void app_main(void) //linking because IDF expects this in C
 {
+
+    ESP_LOGI(LOG_TAG, "Creating default event loop");
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+
+    ESP_LOGI(LOG_TAG, "Initialising NVS");
+    ESP_ERROR_CHECK(nvs_flash_init());
+    
     ESP_ERROR_CHECK(my_main.setup());
 
     while(true)
