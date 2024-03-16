@@ -31,7 +31,7 @@ esp_err_t Main::setup(void)
 
     status |= psi_snsr.init();
 
-    ESP_LOGI(LOG_TAG, "Setup status: %d", status);
+    ESP_LOGI(LOG_TAG, "Setup status: %d\n", status);
     ESP_ERROR_CHECK(status);
 
     return status;
