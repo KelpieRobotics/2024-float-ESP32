@@ -10,6 +10,8 @@ sensor.
 Authors: Rustom Jehangir, Blue Robotics Inc.
          Adam Šimko, Blue Robotics Inc.
 
+Modified for ESP32 by Ethan Bowering, Kelpie Robotics
+
 -------------------------------
 The MIT License (MIT)
 
