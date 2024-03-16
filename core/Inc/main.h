@@ -6,6 +6,9 @@
 #include "Adc.h"
 #include "I2c.h"
 #include "MS5837.h"
+#include "Wifi.h"
+#include "esp_event.h"
+#include "nvs_flash.h"
 
 #define pdSECOND pdMS_TO_TICKS(1000)
 
@@ -41,5 +44,7 @@ class Main final
         float depth{0};
 
         float altitude{0};
+
+        WIFI::Wifi wifi;
 
 };

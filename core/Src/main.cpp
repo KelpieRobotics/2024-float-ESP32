@@ -28,15 +28,19 @@ esp_err_t Main::setup(void)
 {
     esp_err_t status{ESP_OK};
 
-    status |= h1.init();
+    //status |= h1.init();
 
     //status |= adc_unit.init();
 
     //status |= pressure_sens.init();
 
-    status |= i2c_ctrl.init();
+    //status |= i2c_ctrl.init();
 
-    status |= psi_snsr.init();
+    //status |= psi_snsr.init();
+
+    status |= wifi.init();
+
+    if (ESP_OK == status) status |= wifi.begin();
 
     ESP_LOGI(LOG_TAG, "Setup status: %d\n", status);
     ESP_ERROR_CHECK(status);
@@ -46,8 +50,8 @@ esp_err_t Main::setup(void)
 
 void Main::loop(void)
 {
-    //pressure_sens.read(&pressure);
 
+/*
     ESP_ERROR_CHECK(psi_snsr.read());
 
     pressure = psi_snsr.pressure();
@@ -65,7 +69,9 @@ void Main::loop(void)
     ESP_LOGD(LOG_TAG, "Depth: %f", depth);
 
     ESP_LOGD(LOG_TAG, "Altitude: %f\n", altitude);
+*/
 
+    ESP_LOGD(LOG_TAG, "Hello world");
     vTaskDelay(pdSECOND);
     /*
     h1.setForwards();

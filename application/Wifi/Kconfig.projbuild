@@ -4,7 +4,6 @@ menu "Wifi Configuration"
 
     config WIFI_SSID
         string  "SSID of Wifi network"
-        default 19 if IDF_TARGET_ESP32 || IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
         default ""
         help
             SSID of Wifi network.

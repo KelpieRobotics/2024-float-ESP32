@@ -57,7 +57,7 @@ void Wifi::wifi_event_handler(void* arg, esp_event_base_t event_base,
     {
         const wifi_event_t event_type{static_cast<wifi_event_t>(event_id)};
 
-        ESP_LOGI(_log_tag, "%s:%d Event ID %d", __func__, __LINE__, event_id);
+        ESP_LOGI(_log_tag, "%s:%d Event ID %ld", __func__, __LINE__, event_id);
 
         switch(event_type)
         {
@@ -81,7 +81,7 @@ void Wifi::wifi_event_handler(void* arg, esp_event_base_t event_base,
 
         default:
             // TODO STOP and DISCONNECTED, and others
-            ESP_LOGW(_log_tag, "%s:%d Default switch case (%d)", __func__, __LINE__, event_id);
+            ESP_LOGW(_log_tag, "%s:%d Default switch case (%ld)", __func__, __LINE__, event_id);
             break;
         }
     }
@@ -94,7 +94,7 @@ void Wifi::ip_event_handler(void* arg, esp_event_base_t event_base,
     {
         const ip_event_t event_type{static_cast<ip_event_t>(event_id)};
 
-        ESP_LOGI(_log_tag, "%s:%d Event ID %d", __func__, __LINE__, event_id);
+        ESP_LOGI(_log_tag, "%s:%d Event ID %ld", __func__, __LINE__, event_id);
 
         switch(event_type)
         {
@@ -118,7 +118,7 @@ void Wifi::ip_event_handler(void* arg, esp_event_base_t event_base,
 
         default:
             // TODO IP6
-            ESP_LOGW(_log_tag, "%s:%d Default switch case (%d)", __func__, __LINE__, event_id);
+            ESP_LOGW(_log_tag, "%s:%d Default switch case (%ld)", __func__, __LINE__, event_id);
             break;
         }
     }
