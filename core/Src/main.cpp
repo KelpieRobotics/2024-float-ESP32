@@ -40,8 +40,6 @@ esp_err_t Main::setup(void)
 
     status |= wifi.init();
 
-    if (ESP_OK == status) status |= wifi.begin();
-
     ESP_LOGI(LOG_TAG, "Setup status: %d\n", status);
     ESP_ERROR_CHECK(status);
 
@@ -71,8 +69,13 @@ void Main::loop(void)
     ESP_LOGD(LOG_TAG, "Altitude: %f\n", altitude);
 */
 
-    ESP_LOGD(LOG_TAG, "Hello world");
-    vTaskDelay(pdSECOND);
+    wifi.begin();
+    ESP_LOGI(LOG_TAG, "----------------------------------------------");
+    vTaskDelay(10*pdSECOND);
+    wifi.end();
+    ESP_LOGI(LOG_TAG, "----------------------------------------------");
+    vTaskDelay(10*pdSECOND);
+
     /*
     h1.setForwards();
     vTaskDelay(pdSECOND);

@@ -2,6 +2,7 @@
 
 #define WIFI_SSID CONFIG_WIFI_SSID
 #define WIFI_PASS CONFIG_WIFI_PASS
+#define HOSTNAME CONFIG_HOSTNAME
 
 #include "esp_wifi.h"
 #include "esp_event.h"
@@ -48,7 +49,14 @@ public:
     Wifi& operator=(Wifi&&)         = default;
 
     esp_err_t init(void);
+
+    /** Connect to AP
+    */
     esp_err_t begin(void);
+
+    /** Disconnect from AP
+    */
+    esp_err_t end(void);
 
     constexpr const state_e& get_state(void) { return _state; }
 
@@ -74,10 +82,11 @@ private:
     // Get the MAC from the API and convert to ASCII HEX
     static esp_err_t _get_mac(void);
 
-    static char mac_addr_cstr[13];  ///< Buffer to hold MAC as cstring
-    static std::mutex init_mutx;    ///< Initialisation mutex
-    static std::mutex connect_mutx; ///< Connect mutex
-    static std::mutex state_mutx;   ///< State change mutex
+    static char mac_addr_cstr[13];      ///< Buffer to hold MAC as cstring
+    static std::mutex init_mutx;        ///< Initialisation mutex
+    static std::mutex connect_mutx;     ///< Connect mutex
+    static std::mutex disconnect_mutx;  ///< Disconnect mutex
+    static std::mutex state_mutx;       ///< State change mutex
 };
 
 

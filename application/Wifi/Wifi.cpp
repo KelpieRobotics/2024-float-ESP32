@@ -7,7 +7,8 @@ namespace WIFI
 char                Wifi::mac_addr_cstr[]{};    ///< Buffer to hold MAC as cstring
 std::mutex          Wifi::init_mutx{};          ///< Initialisation mutex
 std::mutex          Wifi::connect_mutx{};       ///< Connect mutex
-std::mutex          Wifi::state_mutx{};   ///< State change mutex
+std::mutex          Wifi::disconnect_mutx{};    ///< Disconnect mutex
+std::mutex          Wifi::state_mutx{};         ///< State change mutex
 Wifi::state_e       Wifi::_state{state_e::NOT_INITIALISED};
 wifi_init_config_t  Wifi::wifi_init_config = WIFI_INIT_CONFIG_DEFAULT();
 wifi_config_t       Wifi::wifi_config{};
@@ -76,6 +77,15 @@ void Wifi::wifi_event_handler(void* arg, esp_event_base_t event_base,
             std::lock_guard<std::mutex> state_guard(state_mutx);
             ESP_LOGI(_log_tag, "%s:%d WAITING_FOR_IP", __func__, __LINE__);
             _state = state_e::WAITING_FOR_IP;
+            break;
+        }
+
+        case WIFI_EVENT_STA_DISCONNECTED:
+        {
+            ESP_LOGI(_log_tag, "%s:%d STA_DISCONNECTED, waiting for state_mutx", __func__, __LINE__);
+            std::lock_guard<std::mutex> state_guard(state_mutx);
+            ESP_LOGI(_log_tag, "%s:%d READY_TO_CONNECT", __func__, __LINE__);
+            _state = state_e::READY_TO_CONNECT;
             break;
         }
 
@@ -149,8 +159,10 @@ esp_err_t Wifi::begin(void)
                                                         esp_err_to_name(status));
 
         if (ESP_OK == status)
+        {
+            ESP_LOGI(_log_tag, "%s:%d CONNECTING", __func__, __LINE__);
             _state = state_e::CONNECTING;
-
+        }
         break;
     case state_e::CONNECTING:
     case state_e::WAITING_FOR_IP:
@@ -166,6 +178,47 @@ esp_err_t Wifi::begin(void)
     }
 
     return status;
+}
+
+esp_err_t Wifi::end(void)
+{
+    ESP_LOGI(_log_tag, "%s:%d Waiting for disconect_mutx", __func__, __LINE__);
+    std::lock_guard<std::mutex> disconnect_guard(disconnect_mutx);
+
+    esp_err_t status{ESP_OK};
+
+    ESP_LOGI(_log_tag, "%s:%d Waiting for state_mutx", __func__, __LINE__);
+    std::lock_guard<std::mutex> state_guard(state_mutx);
+
+    switch(_state)
+    {
+    case state_e::CONNECTED:
+        ESP_LOGI(_log_tag, "%s:%d Calling esp_wifi_disconnect", __func__, __LINE__);
+        status = esp_wifi_disconnect();
+        ESP_LOGI(_log_tag, "%s:%d esp_wifi_disconnect:%s", __func__, __LINE__,
+                                                        esp_err_to_name(status));
+
+        if (ESP_OK == status)
+        {
+            ESP_LOGI(_log_tag, "%s:%d DISCONNECTED", __func__, __LINE__);
+            _state = state_e::DISCONNECTED;
+        }
+        break;
+    case state_e::READY_TO_CONNECT:
+    case state_e::INITIALISED:
+    case state_e::DISCONNECTED:
+        break;
+    case state_e::NOT_INITIALISED:
+    case state_e::CONNECTING:
+    case state_e::WAITING_FOR_IP:
+    case state_e::ERROR:
+        ESP_LOGE(_log_tag, "%s:%d Error state", __func__, __LINE__);
+        status = ESP_FAIL;
+        break;
+    }
+
+    return status;
+
 }
 
 esp_err_t Wifi::_init(void)
