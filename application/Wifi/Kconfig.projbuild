@@ -1,0 +1,17 @@
+menu "WiFi Configuration"
+
+    orsource "$IDF_PATH/examples/common_components/env_caps/$IDF_TARGET/Kconfig.env_caps"
+
+    config WIFI_SSID
+        string  "SSID of WiFi network"
+        default ""
+        help
+            SSID of WiFi network.
+
+    config WIFI_PASS
+        string "Password for WiFi network"
+        default ""
+        help
+            Password for WiFi network.
+
+endmenu

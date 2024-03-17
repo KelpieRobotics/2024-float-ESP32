@@ -9,4 +9,7 @@ idf_component_register(SRCS ${SOURCES}
                             Adc
                             Hbridge
                             I2c
-                            MS5837)
+                            MS5837
+                            Wifi
+                            nvs_flash
+                            esp_event)

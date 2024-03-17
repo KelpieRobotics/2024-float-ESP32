@@ -9,6 +9,13 @@ static Main my_main;
 
 extern "C" void app_main(void) //linking because IDF expects this in C
 {
+
+    ESP_LOGI(LOG_TAG, "Creating default event loop");
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+
+    ESP_LOGI(LOG_TAG, "Initialising NVS");
+    ESP_ERROR_CHECK(nvs_flash_init());
+    
     ESP_ERROR_CHECK(my_main.setup());
 
     while(true)
@@ -21,15 +28,17 @@ esp_err_t Main::setup(void)
 {
     esp_err_t status{ESP_OK};
 
-    status |= h1.init();
+    //status |= h1.init();
 
     //status |= adc_unit.init();
 
     //status |= pressure_sens.init();
 
-    status |= i2c_ctrl.init();
+    //status |= i2c_ctrl.init();
 
-    status |= psi_snsr.init();
+    //status |= psi_snsr.init();
+
+    status |= wifi.init();
 
     ESP_LOGI(LOG_TAG, "Setup status: %d\n", status);
     ESP_ERROR_CHECK(status);
@@ -39,8 +48,8 @@ esp_err_t Main::setup(void)
 
 void Main::loop(void)
 {
-    //pressure_sens.read(&pressure);
 
+/*
     ESP_ERROR_CHECK(psi_snsr.read());
 
     pressure = psi_snsr.pressure();
@@ -58,8 +67,15 @@ void Main::loop(void)
     ESP_LOGD(LOG_TAG, "Depth: %f", depth);
 
     ESP_LOGD(LOG_TAG, "Altitude: %f\n", altitude);
+*/
 
-    vTaskDelay(pdSECOND);
+    wifi.begin();
+    ESP_LOGI(LOG_TAG, "----------------------------------------------");
+    vTaskDelay(10*pdSECOND);
+    wifi.end();
+    ESP_LOGI(LOG_TAG, "----------------------------------------------");
+    vTaskDelay(10*pdSECOND);
+
     /*
     h1.setForwards();
     vTaskDelay(pdSECOND);
