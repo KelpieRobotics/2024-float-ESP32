@@ -1,4 +1,4 @@
-menu "Wifi Configuration"
+menu "WiFi Configuration"
 
     orsource "$IDF_PATH/examples/common_components/env_caps/$IDF_TARGET/Kconfig.env_caps"
 
@@ -13,11 +13,5 @@ menu "Wifi Configuration"
         default ""
         help
             Password for WiFi network.
-
-    config HOSTNAME
-        string "Hostname for WiFi network"
-        default "espressif"
-        help
-            Hostname for WiFi network.
 
 endmenu

@@ -2,7 +2,6 @@
 
 #define WIFI_SSID CONFIG_WIFI_SSID
 #define WIFI_PASS CONFIG_WIFI_PASS
-#define HOSTNAME CONFIG_HOSTNAME
 
 #include "esp_wifi.h"
 #include "esp_event.h"
