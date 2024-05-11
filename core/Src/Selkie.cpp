@@ -6,8 +6,6 @@
 #include "packet.h"
 #define LOG_TAG "MAIN" //for ESP logging inside main 
 
-
-
 extern "C" void app_main(void) //linking because IDF expects this in C
 {
 
@@ -97,10 +95,35 @@ esp_err_t wifi_connect()
     return(wifi.begin());
 }
 
-void record_data()
+void record_data_task(void * pvParameters)
 {
-    psi_snsr.read();
-    packet_t packet{NULL, NULL, psi_snsr.pressure(), psi_snsr.depth()}; //company number, time, pressure, depth
-    data.push_back(packet);
+    while(true)
+   { 
+        psi_snsr.read();
+        packet_t packet{COMPANY_NUMBER, NULL, psi_snsr.pressure(), psi_snsr.depth()}; //company number, time, pressure, depth
+        //ESP_LOGD(LOG_TAG, "New packet: %s, %s, %s, %s"); //fill in data from packet
+        data.push_back(packet);
+        vTaskDelay(pdMS_TO_TICKS(5000)); //5s delay per manual
+    }
+}
 
+void dive_task(void * pvParameters)
+{
+    h1.setForwards();
+    ESP_LOGD(LOG_TAG, "Diving...");
+    vTaskDelay(pdMS_TO_TICKS(10000));
+    h1.setOff();
+    ESP_LOGD(LOG_TAG, "Emptied tank");
+    vTaskDelete(NULL);
+    
+}
+
+void surface_task(void * pvParameters)
+{
+    h1.setBackwards();
+    ESP_LOGD(LOG_TAG, "Surfacing...");
+    vTaskDelay(pdMS_TO_TICKS(10000));
+    h1.setOff();
+    ESP_LOGD(LOG_TAG, "Filled tank");
+    vTaskDelete(NULL);
 }

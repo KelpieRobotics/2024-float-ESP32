@@ -56,3 +56,15 @@ menu "I2C Device Configuration"
             I2C address oft the pressure sensor.
 
 endmenu
+
+menu "Mission Configuration"
+
+    orsource "$IDF_PATH/examples/common_components/env_caps/$IDF_TARGET/Kconfig.env_caps"
+
+    config COMPANY_NUMBER
+        int "Company number"
+        default 1234
+        help
+            Company number provided by competition.
+
+endmenu

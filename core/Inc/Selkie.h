@@ -19,11 +19,12 @@
 #define HBRIDGE_PIN_1 static_cast<gpio_num_t>(CONFIG_HBRIDGE_PIN_1)
 #define HBRIDGE_PIN_2 static_cast<gpio_num_t>(CONFIG_HBRIDGE_PIN_2)
 
-#define ADC_UNIT static_cast<adc_unit_t>(CONFIG_ADC_UNIT)
-
 #define LEAK_SENS_PIN static_cast<adc_channel_t>(CONFIG_LEAK_SENS_PIN)
 #define PRESSURE_SENS_ADDR static_cast<uint8_t>(CONFIG_PRESSURE_SENS_ADDR)
 
+#define COMPANY_NUMBER static_cast<uint16_t>(CONFIG_COMPANY_NUMBER)
+
+//#define ADC_UNIT static_cast<adc_unit_t>(CONFIG_ADC_UNIT)
 
 enum class state_e //state of float
 {
@@ -43,34 +44,33 @@ enum class state_e //state of float
 };
 
 static state_e _state{state_e::NOT_INITIALISED};
+
 static std::mutex state_mutx;
+
 static std::mutex data_mutx;
+
 static std::list<packet_t> data{};
 
-esp_err_t setup(void);
-void loop(void);
+static Hbridge::Hbridge h1 {HBRIDGE_PIN_1, HBRIDGE_PIN_2}; 
 
-Hbridge::Hbridge h1 {HBRIDGE_PIN_1, HBRIDGE_PIN_2}; 
+static I2c::I2cController i2c_ctrl {};
+
+static MS5837::MS5837 psi_snsr {PRESSURE_SENS_ADDR, &i2c_ctrl};
+
+static WIFI::Wifi wifi;
+
+void record_data_task(void);
+
+void dive_task(void);
+
+void surface_task(void);
+
+esp_err_t wifi_connect(void);
+
+esp_err_t setup(void);
+
+void loop(void);
 
 //Adc::AdcUnit adc_unit {ADC_UNIT};
 
 //Adc::AdcChannel pressure_sens {&adc_unit, PRESSURE_SENS_PIN};
-
-I2c::I2cController i2c_ctrl {};
-
-MS5837::MS5837 psi_snsr {PRESSURE_SENS_ADDR, &i2c_ctrl};
-
-float pressure{0};
-
-float temp{0};
-
-float depth{0};
-
-float altitude{0};
-
-void record_data(void);
-
-WIFI::Wifi wifi;
-
-esp_err_t wifi_connect(void);
-
