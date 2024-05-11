@@ -20,12 +20,28 @@
 #define LEAK_SENS_PIN static_cast<adc_channel_t>(CONFIG_LEAK_SENS_PIN)
 #define PRESSURE_SENS_ADDR static_cast<uint8_t>(CONFIG_PRESSURE_SENS_ADDR)
 
-class Main final
+class Selkie final
 
 {
     public:
         esp_err_t setup(void);
         void loop(void);
+
+        enum class state_e
+        {
+            NOT_INITIALISED,
+            INITIALISED,
+            WIFI_CONNECTING,
+            WIFI_CONNECTED,
+            SOCKET_CONNECTING,
+            SOCKET_CONNECTED,
+            SENDING_DATA,
+            AWAITING_COMMAND,
+            DIVING,
+            SURFACING,
+            MISSION_COMPLETE,
+            ERROR
+        };
 
         Hbridge::Hbridge h1 {HBRIDGE_PIN_1, HBRIDGE_PIN_2}; 
 

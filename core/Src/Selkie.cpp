@@ -1,11 +1,11 @@
-#include "main.h"
+#include "Selkie.h"
 
 #define LOG_LEVEL_LOCAL ESP_LOG_VERBOSE //local log level
 #include "esp_log.h"
 #include "Hbridge.h"
 #define LOG_TAG "MAIN" //for ESP logging inside main 
 
-static Main my_main;
+static Selkie scout;
 
 extern "C" void app_main(void) //linking because IDF expects this in C
 {
@@ -16,15 +16,15 @@ extern "C" void app_main(void) //linking because IDF expects this in C
     ESP_LOGI(LOG_TAG, "Initialising NVS");
     ESP_ERROR_CHECK(nvs_flash_init());
     
-    ESP_ERROR_CHECK(my_main.setup());
+    ESP_ERROR_CHECK(scout.setup());
 
     while(true)
     {
-        my_main.loop();
+        scout.loop();
     }
 }
 
-esp_err_t Main::setup(void)
+esp_err_t Selkie::setup(void)
 {
     esp_err_t status{ESP_OK};
 
@@ -46,7 +46,7 @@ esp_err_t Main::setup(void)
     return status;
 }
 
-void Main::loop(void)
+void Selkie::loop(void)
 {
 
 /*
