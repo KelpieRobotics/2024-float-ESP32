@@ -24,10 +24,10 @@
 #define LEAK_SENS_PIN static_cast<adc_channel_t>(CONFIG_LEAK_SENS_PIN)
 #define PRESSURE_SENS_ADDR static_cast<uint8_t>(CONFIG_PRESSURE_SENS_ADDR)
 
-class Selkie final
+/*class Selkie final
 
 {
-    public:
+    public:*/
 
         enum class state_e //state of float
         {
@@ -46,10 +46,10 @@ class Selkie final
             ERROR
         };
 
-        static state_e _state;
+        static state_e _state{state_e::NOT_INITIALISED};
         static std::mutex state_mutx;
         static std::mutex data_mutx;
-        static std::list<packet_t> data;
+        static std::list<packet_t> data{};
 
         esp_err_t setup(void);
         void loop(void);
@@ -78,4 +78,4 @@ class Selkie final
 
         esp_err_t wifi_connect(void);
 
-};
+//};

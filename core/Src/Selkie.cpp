@@ -6,10 +6,7 @@
 #include "packet.h"
 #define LOG_TAG "MAIN" //for ESP logging inside main 
 
-static Selkie scout;
 
-Selkie::state_e Selkie::_state{state_e::NOT_INITIALISED};
-std::list<packet_t> Selkie::data{};
 
 extern "C" void app_main(void) //linking because IDF expects this in C
 {
@@ -20,15 +17,15 @@ extern "C" void app_main(void) //linking because IDF expects this in C
     ESP_LOGI(LOG_TAG, "Initialising NVS");
     ESP_ERROR_CHECK(nvs_flash_init());
     
-    ESP_ERROR_CHECK(scout.setup());
+    ESP_ERROR_CHECK(setup());
 
     while(true)
     {
-        scout.loop();
+        loop();
     }
 }
 
-esp_err_t Selkie::setup(void)
+esp_err_t setup(void)
 {
     esp_err_t status{ESP_OK};
 
@@ -50,7 +47,7 @@ esp_err_t Selkie::setup(void)
     return status;
 }
 
-void Selkie::loop(void)
+void loop(void)
 {
 
 /*
@@ -95,12 +92,12 @@ void Selkie::loop(void)
     */
 }
 
-esp_err_t Selkie::wifi_connect()
+esp_err_t wifi_connect()
 {
     return(wifi.begin());
 }
 
-void Selkie::record_data()
+void record_data()
 {
     psi_snsr.read();
     packet_t packet{NULL, NULL, psi_snsr.pressure(), psi_snsr.depth()}; //company number, time, pressure, depth
