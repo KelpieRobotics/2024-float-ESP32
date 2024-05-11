@@ -3,9 +3,13 @@
 #define LOG_LEVEL_LOCAL ESP_LOG_VERBOSE //local log level
 #include "esp_log.h"
 #include "Hbridge.h"
+#include "packet.h"
 #define LOG_TAG "MAIN" //for ESP logging inside main 
 
 static Selkie scout;
+
+Selkie::state_e Selkie::_state{state_e::NOT_INITIALISED};
+std::list<packet_t> Selkie::data{};
 
 extern "C" void app_main(void) //linking because IDF expects this in C
 {
@@ -89,4 +93,17 @@ void Selkie::loop(void)
     h1.setOff();
     vTaskDelay(pdSECOND);
     */
+}
+
+esp_err_t Selkie::wifi_connect()
+{
+    return(wifi.begin());
+}
+
+void Selkie::record_data()
+{
+    psi_snsr.read();
+    packet_t packet{NULL, NULL, psi_snsr.pressure(), psi_snsr.depth()}; //company number, time, pressure, depth
+    data.push_back(packet);
+
 }

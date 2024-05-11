@@ -9,6 +9,10 @@
 #include "Wifi.h"
 #include "esp_event.h"
 #include "nvs_flash.h"
+#include "mutex"
+#include "packet.h"
+
+#include <list>
 
 #define pdSECOND pdMS_TO_TICKS(1000)
 
@@ -24,10 +28,8 @@ class Selkie final
 
 {
     public:
-        esp_err_t setup(void);
-        void loop(void);
 
-        enum class state_e
+        enum class state_e //state of float
         {
             NOT_INITIALISED,
             INITIALISED,
@@ -40,8 +42,17 @@ class Selkie final
             DIVING,
             SURFACING,
             MISSION_COMPLETE,
+            LEAK_DETECTED,
             ERROR
         };
+
+        static state_e _state;
+        static std::mutex state_mutx;
+        static std::mutex data_mutx;
+        static std::list<packet_t> data;
+
+        esp_err_t setup(void);
+        void loop(void);
 
         Hbridge::Hbridge h1 {HBRIDGE_PIN_1, HBRIDGE_PIN_2}; 
 
@@ -61,6 +72,10 @@ class Selkie final
 
         float altitude{0};
 
+        void record_data(void);
+
         WIFI::Wifi wifi;
+
+        esp_err_t wifi_connect(void);
 
 };
