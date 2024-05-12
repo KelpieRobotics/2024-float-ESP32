@@ -59,11 +59,11 @@ static MS5837::MS5837 psi_snsr {PRESSURE_SENS_ADDR, &i2c_ctrl};
 
 static WIFI::Wifi wifi;
 
-void record_data_task(void);
+void record_data_task(void *);
 
-void dive_task(void);
+void dive_task(void *);
 
-void surface_task(void);
+void surface_task(void *);
 
 esp_err_t wifi_connect(void);
 
