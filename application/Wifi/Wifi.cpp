@@ -32,7 +32,7 @@ Wifi::Wifi(void)
     }
 }
 
-void Wifi::event_handler(void* arg, esp_event_base_t event_base,
+/*void Wifi::event_handler(void* arg, esp_event_base_t event_base,
                                 int32_t event_id, void* event_data)
 {
     if (WIFI_EVENT == event_base)
@@ -49,7 +49,7 @@ void Wifi::event_handler(void* arg, esp_event_base_t event_base,
     {
         ESP_LOGE(_log_tag, "%s:%d Unexpected event: %s", __func__, __LINE__, event_base);
     }
-}
+}*/
 
 void Wifi::wifi_event_handler(void* arg, esp_event_base_t event_base,
                                 int32_t event_id, void* event_data)
