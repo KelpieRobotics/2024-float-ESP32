@@ -12,4 +12,5 @@ idf_component_register(SRCS ${SOURCES}
                             MS5837
                             Wifi
                             nvs_flash
-                            esp_event)
+                            esp_event
+                            Tcp)
