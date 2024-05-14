@@ -15,7 +15,7 @@ typedef struct {
     float depth;
     int company_number{COMPANY_NUMBER};
 
-    std::string toString()
+    std::string to_string()
     {
         return (std::to_string(company_number) + "   " + std::to_string(time) + " seconds    " + std::to_string(pressure) + " kpa    " + std::to_string(depth) + " meters\n");
     }

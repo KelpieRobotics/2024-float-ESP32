@@ -172,8 +172,8 @@ void ip_event_handler(void* arg, esp_event_base_t event_base,
     std::list<packet_t>::iterator it; //iterate through and send all packets
     for (it = data.begin(); it != data.end(); it++)
     {
-        ESP_LOGD(LOG_TAG, "%s", it->toString().c_str());
-        tcp_client.socket_send(it->toString());
+        ESP_LOGD(LOG_TAG, "%s", it->to_string().c_str());
+        tcp_client.socket_send(it->to_string());
     }
     data.clear(); //clear for dive
 
