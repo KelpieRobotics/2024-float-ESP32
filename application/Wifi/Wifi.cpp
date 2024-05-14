@@ -170,7 +170,7 @@ esp_err_t Wifi::begin(void)
         break;
     case state_e::NOT_INITIALISED:
     case state_e::INITIALISED:
-    case state_e::DISCONNECTED:
+    //case state_e::DISCONNECTED:
     case state_e::ERROR:
         ESP_LOGE(_log_tag, "%s:%d Error state", __func__, __LINE__);
         status = ESP_FAIL;
@@ -200,13 +200,13 @@ esp_err_t Wifi::end(void)
 
         if (ESP_OK == status)
         {
-            ESP_LOGI(_log_tag, "%s:%d DISCONNECTED", __func__, __LINE__);
-            _state = state_e::DISCONNECTED;
+            ESP_LOGI(_log_tag, "%s:%d READY_TO_CONNECT", __func__, __LINE__);
+            _state = state_e::READY_TO_CONNECT;
         }
         break;
     case state_e::READY_TO_CONNECT:
     case state_e::INITIALISED:
-    case state_e::DISCONNECTED:
+    //case state_e::DISCONNECTED:
         break;
     case state_e::NOT_INITIALISED:
     case state_e::CONNECTING:

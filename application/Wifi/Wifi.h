@@ -34,7 +34,7 @@ public:
         CONNECTING,
         WAITING_FOR_IP,
         CONNECTED,
-        DISCONNECTED,
+        //DISCONNECTED,
         ERROR
     };
 
