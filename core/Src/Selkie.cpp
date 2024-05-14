@@ -1,6 +1,6 @@
 #include "Selkie.h"
 
-#define LOG_LEVEL_LOCAL ESP_LOG_VERBOSE //local log level
+//#define LOG_LEVEL_LOCAL ESP_LOG_VERBOSE //local log level
 #include "esp_log.h"
 #include "Hbridge.h"
 #include "packet.h"
@@ -18,13 +18,18 @@ extern "C" void app_main(void) //linking because IDF expects this in C
     
     ESP_ERROR_CHECK(setup());
 
-    TaskHandle_t xHandle = NULL;
+    while(true) 
+    {
+        loop();
+    }
 
-    xTaskCreate(record_data_task, "test", 4096, NULL, 5, &xHandle);
+    //TaskHandle_t xHandle = NULL;
 
-    vTaskDelay(10*pdSECOND);
+    //xTaskCreate(record_data_task, "test", 4096, NULL, 5, &xHandle);
 
-    vTaskDelete(xHandle);
+    //vTaskDelay(10*pdSECOND);
+
+    //vTaskDelete(xHandle);
     
 }
 
@@ -42,7 +47,13 @@ esp_err_t setup(void)
 
     //status |= psi_snsr.init();
 
-    //status |= wifi.init();
+    status |= wifi.init();
+
+    status = esp_event_handler_instance_register(IP_EVENT,
+                                                            IP_EVENT_STA_GOT_IP,
+                                                            &ip_event_handler,
+                                                            nullptr,
+                                                            nullptr);
 
     ESP_LOGI(LOG_TAG, "Setup status: %d\n", status);
     ESP_ERROR_CHECK(status);
@@ -73,7 +84,9 @@ void loop(void)
     ESP_LOGD(LOG_TAG, "Altitude: %f\n", altitude);
 */
 
+    ESP_LOGI(LOG_TAG, "Wifi begin");
     wifi.begin();
+    ESP_LOGI(LOG_TAG, "Blocking???");
     ESP_LOGI(LOG_TAG, "----------------------------------------------");
     vTaskDelay(10*pdSECOND);
     wifi.end();
@@ -109,7 +122,7 @@ void record_data_task(void * pvParameters)
         //packet_t packet{COMPANY_NUMBER, time(NULL), 100, 100}; //company number, time, pressure, depth
         ESP_LOGD(LOG_TAG, "PACKET: NUMBER: %i, TIME: %i, PRESSURE: %f, DEPTH: %f", packet.companyNumber, (int) packet.time, packet.pressure, packet.depth); 
         data.push_back(packet);
-        vTaskDelay(1*pdSECOND); //5s delay per manual
+        vTaskDelay(5*pdSECOND); //5s delay per manual
     }
 }
 
@@ -123,7 +136,7 @@ void dive_task(void * pvParameters)
     vTaskDelete(NULL);
     
 }
-
+//should probably make these two one task with a long delay in between them
 void surface_task(void * pvParameters)
 {
     h1.setBackwards();
@@ -132,4 +145,26 @@ void surface_task(void * pvParameters)
     h1.setOff();
     ESP_LOGD(LOG_TAG, "Filled tank");
     vTaskDelete(NULL);
+}
+
+void ip_event_handler(void* arg, esp_event_base_t event_base,
+                                int32_t event_id, void* event_data)
+{
+    //tcp connect
+    if (!first_packet)
+    {
+        //create 1st packet
+        data.push_back(packet_t{
+            .companyNumber = COMPANY_NUMBER,
+            .depth = 100,
+            .pressure = 100,
+            .time = nullptr;
+        })
+        first_packet = true;  
+    }
+
+    //send all packets
+    //wait for GO
+    //start dive and record tasks
+    return;
 }

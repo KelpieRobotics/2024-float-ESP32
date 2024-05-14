@@ -43,6 +43,8 @@ enum class state_e //state of float
     ERROR
 };
 
+static bool first_packet{false};
+
 static state_e _state{state_e::NOT_INITIALISED};
 
 static std::mutex state_mutx;
@@ -70,6 +72,9 @@ esp_err_t wifi_connect(void);
 esp_err_t setup(void);
 
 void loop(void);
+
+static void ip_event_handler(void* arg, esp_event_base_t event_base,
+                                    int32_t event_id, void* event_data);
 
 //Adc::AdcUnit adc_unit {ADC_UNIT};
 
