@@ -1,3 +1,8 @@
+/*
+    Ethan Bowering @ Kelpie Robotics
+    May 2024
+*/
+
 #pragma once
 #include "Gpio.h"
 

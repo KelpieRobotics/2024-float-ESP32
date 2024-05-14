@@ -1,3 +1,8 @@
+/*
+    Ethan Bowering @ Kelpie Robotics
+    May 2024
+*/
+
 #include "I2c.h"
 
 namespace I2c

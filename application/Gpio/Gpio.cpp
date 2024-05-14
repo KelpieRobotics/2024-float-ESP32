@@ -1,3 +1,9 @@
+/*
+    Simon Howroyd
+    Modified by Ethan Bowering @ Kelpie Robotics
+    May 2024
+*/
+
 #include "Gpio.h"
 
 namespace Gpio

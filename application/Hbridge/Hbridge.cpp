@@ -1,3 +1,8 @@
+/*
+    Ethan Bowering @ Kelpie Robotics
+    May 2024
+*/
+
 #include "Hbridge.h"
 #include "Gpio.h"
 #include "esp_log.h"

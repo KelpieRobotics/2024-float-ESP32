@@ -1,3 +1,9 @@
+/*
+    Simon Howroyd
+    Modified by Ethan Bowering @ Kelpie Robotics
+    May 2024
+*/
+
 #pragma once
 
 #include "driver/gpio.h"

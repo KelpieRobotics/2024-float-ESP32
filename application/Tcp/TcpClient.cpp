@@ -1,3 +1,8 @@
+/*
+    Ethan Bowering @ Kelpie Robotics
+    May 2024
+*/
+
 #include "TcpClient.h"
 #include <cstring>
 #include "esp_log.h"

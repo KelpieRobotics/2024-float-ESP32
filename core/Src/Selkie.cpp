@@ -1,3 +1,8 @@
+/*
+    Ethan Bowering @ Kelpie Robotics
+    May 2024
+*/
+
 #include "Selkie.h"
 
 //#define LOG_LEVEL_LOCAL ESP_LOG_VERBOSE //local log level

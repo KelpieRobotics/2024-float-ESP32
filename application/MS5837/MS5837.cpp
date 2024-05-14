@@ -1,3 +1,11 @@
+/*
+    Authors: Rustom Jehangir, Blue Robotics Inc.
+             Adam Šimko, Blue Robotics Inc.
+
+    Modified for ESP32 by Ethan Bowering @ Kelpie Robotics
+    May 2024
+*/
+
 #include "MS5837.h"
 #include "cmath"
 #include "esp_log.h"
