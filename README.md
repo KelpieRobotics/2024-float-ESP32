@@ -48,3 +48,5 @@ Mission routine
             etc..
 
     Plenty of refactoring in my code needed for this
+
+    Need to give the data linked list a mutex
