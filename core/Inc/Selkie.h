@@ -11,6 +11,7 @@
 #include "nvs_flash.h"
 #include "mutex"
 #include "packet.h"
+#include "TcpClient.h"
 
 #include <list>
 
@@ -22,7 +23,8 @@
 #define LEAK_SENS_PIN static_cast<adc_channel_t>(CONFIG_LEAK_SENS_PIN)
 #define PRESSURE_SENS_ADDR static_cast<uint8_t>(CONFIG_PRESSURE_SENS_ADDR)
 
-#define COMPANY_NUMBER static_cast<uint16_t>(CONFIG_COMPANY_NUMBER)
+#define HOST_IP_ADDR static_cast<std::string>(CONFIG_HOST_IP_ADDR)
+#define PORT CONFIG_PORT
 
 //#define ADC_UNIT static_cast<adc_unit_t>(CONFIG_ADC_UNIT)
 
@@ -61,11 +63,13 @@ static MS5837::MS5837 psi_snsr {PRESSURE_SENS_ADDR, &i2c_ctrl};
 
 static WIFI::Wifi wifi;
 
-void record_data_task(void *);
+static Tcp::TcpClient tcp_client{HOST_IP_ADDR, PORT};
 
-void dive_task(void *);
+void record_data_task(void*);
 
-void surface_task(void *);
+void dive_task(void*);
+
+void surface_task(void*);
 
 esp_err_t wifi_connect(void);
 

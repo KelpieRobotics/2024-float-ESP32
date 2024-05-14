@@ -18,10 +18,9 @@ extern "C" void app_main(void) //linking because IDF expects this in C
     
     ESP_ERROR_CHECK(setup());
 
-    while(true) 
-    {
-        loop();
-    }
+    wifi_connect();
+
+   
 
     //TaskHandle_t xHandle = NULL;
 
@@ -113,20 +112,20 @@ esp_err_t wifi_connect()
     return(wifi.begin());
 }
 
-void record_data_task(void * pvParameters)
+void record_data_task(void* pvParameters)
 {
     while(true)
    { 
         psi_snsr.read();
-        packet_t packet{COMPANY_NUMBER, time(NULL), psi_snsr.pressure(), psi_snsr.depth()}; //company number, time, pressure, depth
+        packet_t packet{time(NULL), psi_snsr.pressure(), psi_snsr.depth()}; //company number, time, pressure, depth
         //packet_t packet{COMPANY_NUMBER, time(NULL), 100, 100}; //company number, time, pressure, depth
-        ESP_LOGD(LOG_TAG, "PACKET: NUMBER: %i, TIME: %i, PRESSURE: %f, DEPTH: %f", packet.companyNumber, (int) packet.time, packet.pressure, packet.depth); 
+        ESP_LOGD(LOG_TAG, "PACKET: NUMBER: %i, TIME: %i, PRESSURE: %f, DEPTH: %f", packet.company_number, (int) packet.time, packet.pressure, packet.depth); 
         data.push_back(packet);
         vTaskDelay(5*pdSECOND); //5s delay per manual
     }
 }
 
-void dive_task(void * pvParameters)
+void dive_task(void* pvParameters)
 {
     h1.setForwards();
     ESP_LOGD(LOG_TAG, "Diving...");
@@ -137,7 +136,7 @@ void dive_task(void * pvParameters)
     
 }
 //should probably make these two one task with a long delay in between them
-void surface_task(void * pvParameters)
+void surface_task(void* pvParameters)
 {
     h1.setBackwards();
     ESP_LOGD(LOG_TAG, "Surfacing...");
@@ -150,21 +149,38 @@ void surface_task(void * pvParameters)
 void ip_event_handler(void* arg, esp_event_base_t event_base,
                                 int32_t event_id, void* event_data)
 {
-    //tcp connect
+    ESP_ERROR_CHECK(tcp_client.socket_connect());
     if (!first_packet)
     {
-        //create 1st packet
-        data.push_back(packet_t{
-            .companyNumber = COMPANY_NUMBER,
-            .depth = 100,
-            .pressure = 100,
-            .time = nullptr;
-        })
+        //create 1st packet if this is first call
+        data.push_back(packet_t{time(NULL), 1234, 1234});
         first_packet = true;  
     }
 
-    //send all packets
-    //wait for GO
-    //start dive and record tasks
+    vTaskDelay(5*pdSECOND);                                             //garbage test data
+    data.push_back(packet_t{time(NULL), 1234, 1234});
+    vTaskDelay(5*pdSECOND);
+    data.push_back(packet_t{time(NULL), 1234, 1234});
+    vTaskDelay(5*pdSECOND);
+    data.push_back(packet_t{time(NULL), 1234, 1234});
+
+    std::list<packet_t>::iterator it; //iterate through and send all packets
+    for (it = data.begin(); it != data.end(); it++)
+    {
+        ESP_LOGD(LOG_TAG, "%s", it->toString().c_str());
+        tcp_client.socket_send(it->toString());
+    }
+    data.clear(); //clear for dive
+
+    std::string msg{};
+    tcp_client.socket_receive(msg);
+    ESP_LOGD(LOG_TAG, "%s", msg.c_str());
+
+    tcp_client.socket_disconnect();
+
+    wifi.end();
+    vTaskDelay(5*pdSECOND);
+    wifi.begin();
+
     return;
 }
