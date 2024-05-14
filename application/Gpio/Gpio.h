@@ -9,7 +9,7 @@ namespace Gpio
         protected:
             const gpio_num_t _pin;
             const gpio_config_t _cfg;
-            const bool _invert_logic = false;
+            const bool _invert_logic = false; //I think I should get rid of this = false
 
         public: 
             //gpio_num_t pin(void) const {return _pin;}
