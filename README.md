@@ -36,3 +36,13 @@ Mission routine
 
 [MS5837 driver](https://github.com/bluerobotics/BlueRobotics_MS5837_Library)
     - Arduino driver adapted for ESP-IDF
+
+    Aiming for C++ core guidelines conventions:
+        use underscore style names with capital for user defined types:
+            int partial_sum;
+            int count;
+            void push_back();
+            void rotate();
+            class Temperature_reading
+            class Temperature
+            etc..
