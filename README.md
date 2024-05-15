@@ -12,8 +12,11 @@ GPIO digital output
 ADC reading
 
 I2C init
+
+Wifi
+
+TCP 
 ### Needs testing/fix: 
-I2C read
 
 ### Needs implementation/Todo: 
 
@@ -21,7 +24,7 @@ Migrate to new i2c master driver (low priority)
 
 Move i2c read/write functions into controller class, switch write followed by read to write/read
 
-Wifi
+Wifi/TCP error handling
 
 Leak ISR
 
