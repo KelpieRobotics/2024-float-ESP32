@@ -123,8 +123,7 @@ void record_data_task(void* pvParameters)
    { 
         psi_snsr.read();
         packet_t packet{time(NULL), psi_snsr.pressure(), psi_snsr.depth()}; //company number, time, pressure, depth
-        //packet_t packet{COMPANY_NUMBER, time(NULL), 100, 100}; //company number, time, pressure, depth
-        ESP_LOGD(LOG_TAG, "PACKET: NUMBER: %i, TIME: %i, PRESSURE: %f, DEPTH: %f", packet.company_number, (int) packet.time, packet.pressure, packet.depth); 
+        ESP_LOGD(LOG_TAG, "%s", packet.to_string().c_str());
         data.push_back(packet);
         vTaskDelay(5*pdSECOND); //5s delay per manual
     }
@@ -137,9 +136,9 @@ void dive_task(void* pvParameters)
     vTaskDelay(10*pdSECOND);
     h1.setOff();
     ESP_LOGD(LOG_TAG, "Emptied tank");
-    vTaskDelete(NULL);
-    
+    vTaskDelete(NULL);   
 }
+
 //should probably make these two one task with a long delay in between them
 void surface_task(void* pvParameters)
 {
@@ -162,13 +161,6 @@ void ip_event_handler(void* arg, esp_event_base_t event_base,
         first_packet = true;  
     }
 
-    vTaskDelay(5*pdSECOND);                                             //garbage test data
-    data.push_back(packet_t{time(NULL), 1234, 1234});
-    vTaskDelay(5*pdSECOND);
-    data.push_back(packet_t{time(NULL), 1234, 1234});
-    vTaskDelay(5*pdSECOND);
-    data.push_back(packet_t{time(NULL), 1234, 1234});
-
     std::list<packet_t>::iterator it; //iterate through and send all packets
     for (it = data.begin(); it != data.end(); it++)
     {
@@ -182,10 +174,14 @@ void ip_event_handler(void* arg, esp_event_base_t event_base,
     ESP_LOGD(LOG_TAG, "%s", msg.c_str());
 
     tcp_client.socket_disconnect();
-
     wifi.end();
-    vTaskDelay(5*pdSECOND);
-    wifi.begin();
+   
+    xTaskCreate(record_data_task, "Data recording task", 4096, NULL, 5, NULL); //change priority and stack
+    xTaskCreate(dive_task, "Dive task", 4096, NULL, 5, NULL);
 
     return;
 }
+
+//bottom event handler
+
+//surface event handler
