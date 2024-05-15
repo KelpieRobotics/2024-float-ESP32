@@ -6,6 +6,8 @@
 
 #include "Wifi.h"
 
+#define WIFI_RETRY_COUNT CONFIG_WIFI_RETRY_COUNT
+
 namespace WIFI
 {
 
@@ -309,6 +311,7 @@ esp_err_t Wifi::_init(void)
             wifi_config.sta.threshold.authmode  = WIFI_AUTH_WPA2_PSK;
             wifi_config.sta.pmf_cfg.capable     = true;
             wifi_config.sta.pmf_cfg.required    = false;
+            wifi_config.sta.failure_retry_cnt   = WIFI_RETRY_COUNT;
 
             ESP_LOGI(_log_tag, "%s:%d Calling esp_wifi_set_config", __func__, __LINE__);
             status = esp_wifi_set_config(WIFI_IF_STA, &wifi_config); // TODO keep track of mode

@@ -14,4 +14,9 @@ menu "WiFi Configuration"
         help
             Password for WiFi network.
 
+    config WIFI_RETRY_COUNT
+        int "Number of attempts to reconnect to wifi"
+        default 3
+        help
+            Number of attempts to reconnect to wifi
 endmenu

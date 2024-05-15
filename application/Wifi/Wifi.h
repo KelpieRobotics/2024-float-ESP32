@@ -8,7 +8,6 @@
 #include "esp_log.h"
 #include "esp_mac.h"
 
-
 #include <algorithm>
 #include <mutex>
 
