@@ -12,6 +12,8 @@
 #include <ctime>
 #define LOG_TAG "MAIN" //for ESP logging inside main 
 
+bool g_dive {true};
+
 extern "C" void app_main(void) //linking because IDF expects this in C
 {
 
@@ -134,9 +136,10 @@ void dive_task(void* pvParameters)
     h1.setForwards();
     ESP_LOGD(LOG_TAG, "Diving...");
     vTaskDelay(10*pdSECOND);
-    h1.setOff();
-    ESP_LOGD(LOG_TAG, "Emptied tank");
-    vTaskDelete(NULL);   
+    stop_dive_start_surface();
+    //h1.setOff();
+    //ESP_LOGD(LOG_TAG, "Emptied tank");
+    //vTaskDelete(NULL);   
 }
 
 //should probably make these two one task with a long delay in between them
@@ -148,6 +151,30 @@ void surface_task(void* pvParameters)
     h1.setOff();
     ESP_LOGD(LOG_TAG, "Filled tank");
     vTaskDelete(NULL);
+}
+
+void stop_dive_start_surface()
+{
+    while (true) {
+        psi_snsr.read();
+        double depth1 {psi_snsr.depth()};
+        vTaskDelay(5*pdSECOND);
+        double depth2 {psi_snsr.depth()};
+        // we can change the value of epsilon further depending on the error percentage of the sensor.
+        if ( approximatelyEqualAbsoluteRelative(depth1,depth2,1e-12,1e-8)) {
+            // if we were diving, start surfacing
+            if (g_dive) {
+                g_dive = false;
+                ESP_LOGD(LOG_TAG, "Surfacing...");
+                h1.setBackwards();
+            } else {
+                // if we were surfacing, stop.
+                h1.setOff();
+                break;
+            }
+        }
+        vTaskDelay(5*pdSECOND);
+    }
 }
 
 void ip_event_handler(void* arg, esp_event_base_t event_base,

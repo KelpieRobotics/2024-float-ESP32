@@ -13,4 +13,5 @@ idf_component_register(SRCS ${SOURCES}
                             Wifi
                             nvs_flash
                             esp_event
-                            Tcp)
+                            Tcp
+                            Library)
