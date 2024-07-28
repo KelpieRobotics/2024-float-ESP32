@@ -143,15 +143,15 @@ void dive_task(void* pvParameters)
 }
 
 //should probably make these two one task with a long delay in between them
-void surface_task(void* pvParameters)
-{
-    h1.setBackwards();
-    ESP_LOGD(LOG_TAG, "Surfacing...");
-    vTaskDelay(10*pdSECOND);
-    h1.setOff();
-    ESP_LOGD(LOG_TAG, "Filled tank");
-    vTaskDelete(NULL);
-}
+// void surface_task(void* pvParameters)
+// {
+//     h1.setBackwards();
+//     ESP_LOGD(LOG_TAG, "Surfacing...");
+//     vTaskDelay(10*pdSECOND);
+//     h1.setOff();
+//     ESP_LOGD(LOG_TAG, "Filled tank");
+//     vTaskDelete(NULL);
+// }
 
 void stop_dive_start_surface()
 {
@@ -159,6 +159,7 @@ void stop_dive_start_surface()
         psi_snsr.read();
         double depth1 {psi_snsr.depth()};
         vTaskDelay(5*pdSECOND);
+        psi_snsr.read();
         double depth2 {psi_snsr.depth()};
         // we can change the value of epsilon further depending on the error percentage of the sensor.
         if ( approximatelyEqualAbsoluteRelative(depth1,depth2,1e-12,1e-8)) {
