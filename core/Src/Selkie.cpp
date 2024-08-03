@@ -130,17 +130,16 @@ void record_data_task(void* pvParameters)
         vTaskDelay(5*pdSECOND); //5s delay per manual
     }
 }
-
-void dive_task(void* pvParameters)
-{
-    h1.setForwards();
-    ESP_LOGD(LOG_TAG, "Diving...");
-    vTaskDelay(10*pdSECOND);
-    stop_dive_start_surface();
-    //h1.setOff();
-    //ESP_LOGD(LOG_TAG, "Emptied tank");
-    //vTaskDelete(NULL);   
-}
+// I think stop_dive_start_surface() takes care of both of them
+// void dive_task(void* pvParameters)
+// {
+//     h1.setForwards();
+//     ESP_LOGD(LOG_TAG, "Diving...");
+//     vTaskDelay(10*pdSECOND);
+//     //h1.setOff();
+//     //ESP_LOGD(LOG_TAG, "Emptied tank");
+//     //vTaskDelete(NULL);   
+// }
 
 //should probably make these two one task with a long delay in between them
 // void surface_task(void* pvParameters)
@@ -153,29 +152,39 @@ void dive_task(void* pvParameters)
 //     vTaskDelete(NULL);
 // }
 
-void stop_dive_start_surface()
+void move(void* pvParameters)
 {
+    h1.setForwards();
+    ESP_LOGD(LOG_TAG, "Diving...");
+    vTaskDelay(10*pdSECOND);
+    double depth1 {};
+    double depth2 {};
     while (true) {
         psi_snsr.read();
-        double depth1 {psi_snsr.depth()};
+        depth1 = psi_snsr.depth();
         vTaskDelay(5*pdSECOND);
         psi_snsr.read();
-        double depth2 {psi_snsr.depth()};
+        depth2 = psi_snsr.depth();
         // we can change the value of epsilon further depending on the error percentage of the sensor.
         if ( approximatelyEqualAbsoluteRelative(depth1,depth2,1e-12,1e-8)) {
             // if we were diving, start surfacing
             if (g_dive) {
                 g_dive = false;
-                ESP_LOGD(LOG_TAG, "Surfacing...");
+                h1.setOff();
+                ESP_LOGD(LOG_TAG, "Emptied tank");
+                vTaskDelay(5*pdSECOND);
                 h1.setBackwards();
+                ESP_LOGD(LOG_TAG, "Surfacing...");
             } else {
                 // if we were surfacing, stop.
                 h1.setOff();
+                ESP_LOGD(LOG_TAG, "Filled tank");
                 break;
             }
         }
         vTaskDelay(5*pdSECOND);
     }
+    vTaskDelete(NULL);
 }
 
 void ip_event_handler(void* arg, esp_event_base_t event_base,
@@ -205,7 +214,7 @@ void ip_event_handler(void* arg, esp_event_base_t event_base,
     wifi.end();
    
     xTaskCreate(record_data_task, "Data recording task", 4096, NULL, 5, NULL); //change priority and stack
-    xTaskCreate(dive_task, "Dive task", 4096, NULL, 5, NULL);
+    xTaskCreate(move, "Move task", 4096, NULL, 5, NULL);
 
     return;
 }
