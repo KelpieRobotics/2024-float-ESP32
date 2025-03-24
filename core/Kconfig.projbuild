@@ -67,6 +67,19 @@ menu "Mission Configuration"
         help
             Company number provided by competition.
 
+    config TARGET_DEPTH_METRES
+        int "Target depth metres"
+        default 2
+        help
+            Meters portion of target depth (X.__)
+
+    config TARGET_DEPTH_CENTIMETRES
+        int "Target depth centimetres"
+        default 50
+        help
+            Centimetres portion of target depth (_.XX)
+
+
 endmenu
 
 menu "TCP Configuration"
