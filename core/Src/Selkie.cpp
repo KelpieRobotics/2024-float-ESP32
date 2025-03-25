@@ -59,9 +59,7 @@ esp_err_t setup(void)
                                                             &ip_event_handler,
                                                             nullptr,
                                                             nullptr);
-
-    data.push_back(packet_t{time(NULL), 0,0});
-
+                                                            
     ESP_LOGI(LOG_TAG, "Setup status: %d\n", status);
     ESP_ERROR_CHECK(status);
 
