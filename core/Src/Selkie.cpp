@@ -26,15 +26,6 @@ extern "C" void app_main(void) //linking because IDF expects this in C
     ESP_ERROR_CHECK(setup());
 
     wifi.begin();
-
-   
-
-
-    //xTaskCreate(record_data_task, "test", 4096, NULL, 5, &xHandle);
-
-    //vTaskDelay(10*pdSECOND);
-
-    //vTaskDelete(xHandle);
     
 }
 
