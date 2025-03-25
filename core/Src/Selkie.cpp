@@ -12,6 +12,8 @@
 #include <ctime>
 #define LOG_TAG "MAIN" //for ESP logging inside main 
 
+TaskHandle_t xHandle = NULL;
+
 extern "C" void app_main(void) //linking because IDF expects this in C
 {
 
@@ -23,11 +25,10 @@ extern "C" void app_main(void) //linking because IDF expects this in C
     
     ESP_ERROR_CHECK(setup());
 
-    wifi_connect();
+    wifi.begin();
 
    
 
-    //TaskHandle_t xHandle = NULL;
 
     //xTaskCreate(record_data_task, "test", 4096, NULL, 5, &xHandle);
 
@@ -41,15 +42,15 @@ esp_err_t setup(void)
 {
     esp_err_t status{ESP_OK};
 
-    //status |= h1.init();
+    status |= h1.init();
 
     //status |= adc_unit.init();
 
     //status |= pressure_sens.init();
 
-    //status |= i2c_ctrl.init();
+    status |= i2c_ctrl.init();
 
-    //status |= psi_snsr.init();
+    status |= psi_snsr.init();
 
     status |= wifi.init();
 
@@ -59,58 +60,14 @@ esp_err_t setup(void)
                                                             nullptr,
                                                             nullptr);
 
+    data.push_back(packet_t{time(NULL), 0,0});
+
     ESP_LOGI(LOG_TAG, "Setup status: %d\n", status);
     ESP_ERROR_CHECK(status);
 
     return status;
 }
 
-void loop(void)
-{
-
-/*
-    ESP_ERROR_CHECK(psi_snsr.read());
-
-    pressure = psi_snsr.pressure();
-
-    temp = psi_snsr.temperature();
-
-    depth = psi_snsr.depth();
-
-    altitude = psi_snsr.altitude();
-
-    ESP_LOGD(LOG_TAG, "Pressure: %f", pressure);
-
-    ESP_LOGD(LOG_TAG, "Temperature: %f", temp);
-
-    ESP_LOGD(LOG_TAG, "Depth: %f", depth);
-
-    ESP_LOGD(LOG_TAG, "Altitude: %f\n", altitude);
-*/
-
-    ESP_LOGI(LOG_TAG, "Wifi begin");
-    wifi.begin();
-    ESP_LOGI(LOG_TAG, "Blocking???");
-    ESP_LOGI(LOG_TAG, "----------------------------------------------");
-    vTaskDelay(10*pdSECOND);
-    wifi.end();
-    ESP_LOGI(LOG_TAG, "----------------------------------------------");
-    vTaskDelay(10*pdSECOND);
-
-    /*
-    h1.setForwards();
-    vTaskDelay(pdSECOND);
-
-    h1.setOff();
-    vTaskDelay(pdSECOND);
-
-    h1.setBackwards();
-    vTaskDelay(pdSECOND);
-
-    h1.setOff();
-    vTaskDelay(pdSECOND);
-    */
-}
 
 esp_err_t wifi_connect()
 {
@@ -138,6 +95,26 @@ void dive_task(void* pvParameters)
     ESP_LOGD(LOG_TAG, "Emptied tank");
     vTaskDelete(NULL);   
 }
+
+void test_dive_task(void* pvParameters)
+{
+    h1.setForwards();
+    ESP_LOGD(LOG_TAG, "Diving...");
+    vTaskDelay(5*pdSECOND);
+    h1.setOff();
+    ESP_LOGD(LOG_TAG, "Emptied tank");
+    vTaskDelay(5*pdSECOND);
+
+    h1.setBackwards();
+    ESP_LOGD(LOG_TAG, "Surfacing...");
+    vTaskDelay(5*pdSECOND);
+    h1.setOff();
+    ESP_LOGD(LOG_TAG, "Filled tank");
+    vTaskDelay(5*pdSECOND);
+    vTaskDelete(xHandle);
+
+    wifi.begin();
+    vTaskDelete(NULL);}
 
 //should probably make these two one task with a long delay in between them
 void surface_task(void* pvParameters)
@@ -176,8 +153,8 @@ void ip_event_handler(void* arg, esp_event_base_t event_base,
     tcp_client.socket_disconnect();
     wifi.end();
    
-    xTaskCreate(record_data_task, "Data recording task", 4096, NULL, 5, NULL); //change priority and stack
-    xTaskCreate(dive_task, "Dive task", 4096, NULL, 5, NULL);
+    xTaskCreate(record_data_task, "Data recording task", 4096, NULL, 5, &xHandle); //change priority and stack
+    xTaskCreate(test_dive_task, "Dive task", 4096, NULL, 5, NULL);
 
     return;
 }
