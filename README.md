@@ -25,10 +25,15 @@ Migrate to new i2c master driver (low priority)
 Move i2c read/write functions into controller class, switch write followed by read to write/read
 
 Wifi/TCP error handling
+- Socket connection failure
 
 Leak ISR
 
 Mission routine
+- Switch from destroying tasks to blocking
+
+Depth control system
+
 
 
 ## Sources:
