@@ -48,9 +48,9 @@ esp_err_t setup(void)
 
     //status |= pressure_sens.init();
 
-    status |= i2c_ctrl.init();
+    //status |= i2c_ctrl.init();
 
-    status |= psi_snsr.init();
+    //status |= psi_snsr.init();
 
     status |= wifi.init();
 
@@ -78,9 +78,9 @@ void record_data_task(void* pvParameters)
 {
     while(true)
    { 
-        psi_snsr.read();
-        packet_t packet{time(NULL), psi_snsr.pressure(), psi_snsr.depth()}; //company number, time, pressure, depth
-        ESP_LOGD(LOG_TAG, "%s", packet.to_string().c_str());
+        //psi_snsr.read();
+        packet_t packet{time(NULL), (float) rand(), (float) rand()}; //company number, time, pressure, depth
+        ESP_LOGI(LOG_TAG, "%s", packet.to_string().c_str());
         data.push_back(packet);
         vTaskDelay(5*pdSECOND); //5s delay per manual
     }
@@ -89,27 +89,27 @@ void record_data_task(void* pvParameters)
 void dive_task(void* pvParameters)
 {
     h1.setForwards();
-    ESP_LOGD(LOG_TAG, "Diving...");
+    ESP_LOGI(LOG_TAG, "Diving...");
     vTaskDelay(10*pdSECOND);
     h1.setOff();
-    ESP_LOGD(LOG_TAG, "Emptied tank");
+    ESP_LOGI(LOG_TAG, "Emptied tank");
     vTaskDelete(NULL);   
 }
 
 void test_dive_task(void* pvParameters)
 {
     h1.setForwards();
-    ESP_LOGD(LOG_TAG, "Diving...");
+    ESP_LOGI(LOG_TAG, "Diving...");
     vTaskDelay(5*pdSECOND);
     h1.setOff();
-    ESP_LOGD(LOG_TAG, "Emptied tank");
+    ESP_LOGI(LOG_TAG, "Emptied tank");
     vTaskDelay(5*pdSECOND);
 
     h1.setBackwards();
-    ESP_LOGD(LOG_TAG, "Surfacing...");
+    ESP_LOGI(LOG_TAG, "Surfacing...");
     vTaskDelay(5*pdSECOND);
     h1.setOff();
-    ESP_LOGD(LOG_TAG, "Filled tank");
+    ESP_LOGI(LOG_TAG, "Filled tank");
     vTaskDelay(5*pdSECOND);
     vTaskDelete(xHandle);
 
@@ -120,10 +120,10 @@ void test_dive_task(void* pvParameters)
 void surface_task(void* pvParameters)
 {
     h1.setBackwards();
-    ESP_LOGD(LOG_TAG, "Surfacing...");
+    ESP_LOGI(LOG_TAG, "Surfacing...");
     vTaskDelay(10*pdSECOND);
     h1.setOff();
-    ESP_LOGD(LOG_TAG, "Filled tank");
+    ESP_LOGI(LOG_TAG, "Filled tank");
     vTaskDelete(NULL);
 }
 
@@ -135,14 +135,15 @@ void ip_event_handler(void* arg, esp_event_base_t event_base,
     std::list<packet_t>::iterator it; //iterate through and send all packets
     for (it = data.begin(); it != data.end(); it++)
     {
-        ESP_LOGD(LOG_TAG, "%s", it->to_string().c_str());
+        ESP_LOGI(LOG_TAG, "%s", it->to_string().c_str());
         tcp_client.socket_send(it->to_string());
     }
     data.clear(); //clear for dive
 
+    ESP_LOGI(LOG_TAG, "Waiting for command...");
     std::string msg{};
     tcp_client.socket_receive(msg);
-    ESP_LOGD(LOG_TAG, "%s", msg.c_str());
+    ESP_LOGI(LOG_TAG, "%s", msg.c_str());
 
     tcp_client.socket_disconnect();
     wifi.end();
