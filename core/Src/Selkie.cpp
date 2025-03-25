@@ -59,7 +59,9 @@ esp_err_t setup(void)
                                                             &ip_event_handler,
                                                             nullptr,
                                                             nullptr);
-                                                            
+
+    data.push_back(packet_t{time(NULL), 1234, 1234});
+
     ESP_LOGI(LOG_TAG, "Setup status: %d\n", status);
     ESP_ERROR_CHECK(status);
 
@@ -129,12 +131,6 @@ void ip_event_handler(void* arg, esp_event_base_t event_base,
                                 int32_t event_id, void* event_data)
 {
     ESP_ERROR_CHECK(tcp_client.socket_connect());
-    if (!first_packet)
-    {
-        //create 1st packet if this is first call
-        data.push_back(packet_t{time(NULL), 1234, 1234});
-        first_packet = true;  
-    }
 
     std::list<packet_t>::iterator it; //iterate through and send all packets
     for (it = data.begin(); it != data.end(); it++)
