@@ -44,13 +44,9 @@ esp_err_t setup(void)
 
     status |= h1.init();
 
-    //status |= adc_unit.init();
+    status |= i2c_ctrl.init();
 
-    //status |= pressure_sens.init();
-
-    //status |= i2c_ctrl.init();
-
-    //status |= psi_snsr.init();
+    status |= psi_snsr.init();
 
     status |= wifi.init();
 
@@ -78,8 +74,8 @@ void record_data_task(void* pvParameters)
 {
     while(true)
    { 
-        //psi_snsr.read();
-        packet_t packet{time(NULL), (float) rand(), (float) rand()}; //company number, time, pressure, depth
+        psi_snsr.read();
+        packet_t packet{time(NULL), psi_snsr.pressure(), psi_snsr.depth()}; //company number, time, pressure, depth
         ESP_LOGI(LOG_TAG, "%s", packet.to_string().c_str());
         data.push_back(packet);
         vTaskDelay(5*pdSECOND); //5s delay per manual
