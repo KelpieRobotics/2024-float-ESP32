@@ -17,6 +17,7 @@
 #include "mutex"
 #include "packet.h"
 #include "TcpClient.h"
+#include "library.h"
 
 #include <list>
 
@@ -75,6 +76,8 @@ void record_data_task(void*);
 void dive_task(void*);
 
 void surface_task(void*);
+
+void stop_dive_start_surface();
 
 esp_err_t wifi_connect(void);
 
