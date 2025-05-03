@@ -4,13 +4,13 @@ menu "WiFi Configuration"
 
     config WIFI_SSID
         string  "SSID of WiFi network"
-        default ""
+        default "Kelpie-WRT-2.4"
         help
             SSID of WiFi network.
 
     config WIFI_PASS
         string "Password for WiFi network"
-        default ""
+        default "KelpieRobotics"
         help
             Password for WiFi network.
 
