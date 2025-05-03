@@ -87,14 +87,14 @@ void test_dive_task(void* pvParameters)
 {
     h1.setForwards();
     ESP_LOGI(LOG_TAG, "Diving...");
-    vTaskDelay(5*pdSECOND);
+    vTaskDelay(120*pdSECOND);
     h1.setOff();
     ESP_LOGI(LOG_TAG, "Emptied tank");
     vTaskDelay(5*pdSECOND);
 
     h1.setBackwards();
     ESP_LOGI(LOG_TAG, "Surfacing...");
-    vTaskDelay(5*pdSECOND);
+    vTaskDelay(120*pdSECOND);
     h1.setOff();
     ESP_LOGI(LOG_TAG, "Filled tank");
     vTaskDelay(5*pdSECOND);
