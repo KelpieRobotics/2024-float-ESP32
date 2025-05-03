@@ -60,6 +60,8 @@ static std::mutex data_mutx;
 
 static std::list<packet_t> data{};
 
+static std::list<float> depth_history;
+
 static Hbridge::Hbridge h1 {HBRIDGE_PIN_1, HBRIDGE_PIN_2}; 
 
 static I2c::I2cController i2c_ctrl {};

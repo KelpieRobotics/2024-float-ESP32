@@ -63,13 +63,28 @@ esp_err_t wifi_connect()
 
 void record_data_task(void* pvParameters)
 {
+
+    float pressure;
+    float depth;
+    int ctr = 5000;
     while(true)
    { 
         psi_snsr.read();
-        packet_t packet{time(NULL), psi_snsr.pressure(), psi_snsr.depth()}; //company number, time, pressure, depth
-        ESP_LOGI(LOG_TAG, "%s", packet.to_string().c_str());
-        data.push_back(packet);
-        vTaskDelay(5*pdSECOND); //5s delay per manual
+        pressure = psi_snsr.pressure();
+        depth = psi_snsr.depth();
+
+        depth_history.push_back(depth);
+
+        if (ctr >= 5000) //every 5 seconds 
+        {
+            packet_t packet{time(NULL), pressure, depth}; //company number, time, pressure, depth
+            ESP_LOGI(LOG_TAG, "%s", packet.to_string().c_str());
+            data.push_back(packet);
+            ctr = 0;
+        }
+        
+        vTaskDelay(pdMS_TO_TICKS(100)); //ten times per second
+        ctr += 100;
     }
 }
 
