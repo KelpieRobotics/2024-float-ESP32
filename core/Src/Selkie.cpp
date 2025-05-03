@@ -72,12 +72,13 @@ void record_data_task(void* pvParameters)
         psi_snsr.read();
         pressure = psi_snsr.pressure();
         depth = psi_snsr.depth();
+        time_t current_time = time(NULL);
 
         depth_history.push_back(depth);
 
         if (ctr >= 5000) //every 5 seconds 
         {
-            packet_t packet{time(NULL), pressure, depth}; //company number, time, pressure, depth
+            packet_t packet{current_time, pressure, depth}; //company number, time, pressure, depth
             ESP_LOGI(LOG_TAG, "%s", packet.to_string().c_str());
             data.push_back(packet);
             ctr = 0;
