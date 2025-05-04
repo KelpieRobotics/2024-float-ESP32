@@ -63,18 +63,28 @@ esp_err_t wifi_connect()
 
 void record_data_task(void* pvParameters)
 {
+    int ctr = 0;
+    float current_velocity = 0;
+    
+    psi_snsr.read();
+    float pressure = psi_snsr.pressure();
+    float depth = psi_snsr.depth();
+    
+    time_t current_time = time(NULL);
+    depth_history.push_back({current_time, depth, current_velocity});
 
-    float pressure;
-    float depth;
-    int ctr = 5000;
     while(true)
    { 
+        vTaskDelay(pdMS_TO_TICKS(500)); //two times per second, change this to xTaskDelayUntil
+        ctr += 500;
+
         psi_snsr.read();
         pressure = psi_snsr.pressure();
         depth = psi_snsr.depth();
-        time_t current_time = time(NULL);
 
-        depth_history.push_back(depth);
+        current_velocity = velocity(std::get<1>(depth_history.back()), depth);
+        current_time = time(NULL);
+        depth_history.push_back({current_time, depth, current_velocity});
 
         if (ctr >= 5000) //every 5 seconds 
         {
@@ -83,10 +93,12 @@ void record_data_task(void* pvParameters)
             data.push_back(packet);
             ctr = 0;
         }
-        
-        vTaskDelay(pdMS_TO_TICKS(100)); //ten times per second
-        ctr += 100;
     }
+}
+
+float velocity(float v1, float v2) //metres per second
+{
+    return (v2-v1)/0.5;
 }
 
 void dive_task(void* pvParameters)
