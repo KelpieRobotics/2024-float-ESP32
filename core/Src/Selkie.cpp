@@ -13,7 +13,6 @@
 #define LOG_TAG "MAIN" //for ESP logging inside main 
 
 TaskHandle_t recordTaskHandle = NULL;
-TaskHandle_t motorTaskHandle = NULL;
 
 extern "C" void app_main(void) //linking because IDF expects this in C
 {
@@ -27,7 +26,6 @@ extern "C" void app_main(void) //linking because IDF expects this in C
     ESP_ERROR_CHECK(setup());
 
     xTaskCreate(record_data_task, "Data recording task", 4096, NULL, 5, &recordTaskHandle); //change priority and stack
-    xTaskCreate(test_dive_task, "Dive task", 4096, NULL, 5, &motorTaskHandle);
 
     wifi.begin();
 
@@ -76,7 +74,6 @@ void record_data_task(void* pvParameters)
 
         int ctr = 0;
         float current_velocity = 0;
-        bool descent = true;
         
         psi_snsr.read();
         float pressure = psi_snsr.pressure();
