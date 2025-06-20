@@ -4,7 +4,7 @@ menu "TCP Configuration"
 
     config HOST_IP_ADDR
         string  "Host IP"
-        default "192.168.2.44"
+        default "192.168.1.196"
         help
             Host IP address.
 

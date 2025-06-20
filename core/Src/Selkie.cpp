@@ -12,7 +12,8 @@
 #include <ctime>
 #define LOG_TAG "MAIN" //for ESP logging inside main 
 
-TaskHandle_t xHandle = NULL;
+TaskHandle_t recordTaskHandle = NULL;
+TaskHandle_t motorTaskHandle = NULL;
 
 extern "C" void app_main(void) //linking because IDF expects this in C
 {
@@ -25,7 +26,12 @@ extern "C" void app_main(void) //linking because IDF expects this in C
     
     ESP_ERROR_CHECK(setup());
 
+    xTaskCreate(record_data_task, "Data recording task", 4096, NULL, 5, &recordTaskHandle); //change priority and stack
+    xTaskCreate(test_dive_task, "Dive task", 4096, NULL, 5, &motorTaskHandle);
+
     wifi.begin();
+
+
     
 }
 
@@ -41,7 +47,7 @@ esp_err_t setup(void)
 
     status |= wifi.init();
 
-    status = esp_event_handler_instance_register(IP_EVENT,
+    status |= esp_event_handler_instance_register(IP_EVENT,
                                                             IP_EVENT_STA_GOT_IP,
                                                             &ip_event_handler,
                                                             nullptr,
@@ -63,36 +69,75 @@ esp_err_t wifi_connect()
 
 void record_data_task(void* pvParameters)
 {
-    int ctr = 0;
-    float current_velocity = 0;
-    
-    psi_snsr.read();
-    float pressure = psi_snsr.pressure();
-    float depth = psi_snsr.depth();
-    
-    time_t current_time = time(NULL);
-    depth_history.push_back({current_time, depth, current_velocity});
+    while (true)
+    {
+        int state = 0;
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY); //wait for notification to dive
 
-    while(true)
-   { 
-        vTaskDelay(pdMS_TO_TICKS(500)); //two times per second, change this to xTaskDelayUntil
-        ctr += 500;
-
+        int ctr = 0;
+        float current_velocity = 0;
+        bool descent = true;
+        
         psi_snsr.read();
-        pressure = psi_snsr.pressure();
-        depth = psi_snsr.depth();
-
-        current_velocity = velocity(std::get<1>(depth_history.back()), depth);
-        current_time = time(NULL);
+        float pressure = psi_snsr.pressure();
+        float depth = psi_snsr.depth();
+        
+        time_t current_time = time(NULL);
         depth_history.push_back({current_time, depth, current_velocity});
 
-        if (ctr >= 5000) //every 5 seconds 
-        {
-            packet_t packet{current_time, pressure, depth}; //company number, time, pressure, depth
-            ESP_LOGI(LOG_TAG, "%s", packet.to_string().c_str());
-            data.push_back(packet);
-            ctr = 0;
+        h1.setForwards();
+
+        while(true)
+        { 
+            vTaskDelay(pdMS_TO_TICKS(500)); //two times per second, change this to xTaskDelayUntil
+            ctr += 500;
+
+            psi_snsr.read();
+            pressure = psi_snsr.pressure();
+            depth = psi_snsr.depth();
+
+            current_velocity = velocity(std::get<1>(depth_history.back()), depth);
+            current_time = time(NULL);
+            depth_history.push_back({current_time, depth, current_velocity});
+            if ((ctr%5000)==0) //every 5 seconds 
+            {
+                packet_t packet{current_time, pressure, depth}; //company number, time, pressure, depth
+                ESP_LOGI(LOG_TAG, "%s", packet.to_string().c_str());
+                data.push_back(packet);
+            }
+
+            switch (state)
+            {
+            case 0:
+                if (ctr >= 300) //after 1 minute
+                {
+                    h1.setOff();
+                    ++state;
+                }
+                break;
+
+            case 1:
+                if (ctr >= 600) //after 2 minutes
+                {
+                    h1.setBackwards();
+                    ++state;
+                }
+                break;
+
+            case 2:
+                if (-0.5 <= depth || ctr >= 1200) //if at/near surface or after 4 min...
+                {
+                    h1.setOff();
+                    goto endloop;
+                }
+                break;
+            default:
+                break;
+            }
+            //end of while loop
         }
+        endloop:
+        wifi.begin();
     }
 }
 
@@ -126,7 +171,7 @@ void test_dive_task(void* pvParameters)
     h1.setOff();
     ESP_LOGI(LOG_TAG, "Filled tank");
     vTaskDelay(5*pdSECOND);
-    vTaskDelete(xHandle);
+    vTaskDelete(recordTaskHandle);
 
     wifi.begin();
     vTaskDelete(NULL);}
@@ -155,6 +200,14 @@ void ip_event_handler(void* arg, esp_event_base_t event_base,
     }
     data.clear(); //clear for dive
 
+    std::list<std::tuple<time_t, float, float>>::iterator it2; //iterate through and send all packets
+
+    for (it2 = depth_history.begin(); it2 != depth_history.end(); it2++)
+    {
+        ESP_LOGI(LOG_TAG, "%s", depth_history_string(*it2).c_str());
+        tcp_client.socket_send(depth_history_string(*it2));
+    }
+
     ESP_LOGI(LOG_TAG, "Waiting for command...");
     std::string msg{};
     tcp_client.socket_receive(msg);
@@ -162,13 +215,19 @@ void ip_event_handler(void* arg, esp_event_base_t event_base,
 
     tcp_client.socket_disconnect();
     wifi.end();
+
+    xTaskNotify(recordTaskHandle,0,eNoAction);
    
-    xTaskCreate(record_data_task, "Data recording task", 4096, NULL, 5, &xHandle); //change priority and stack
-    xTaskCreate(test_dive_task, "Dive task", 4096, NULL, 5, NULL);
+    //xTaskCreate(record_data_task, "Data recording task", 4096, NULL, 5, &recordTaskHandle); //change priority and stack
+    //xTaskCreate(test_dive_task, "Dive task", 4096, NULL, 5, NULL);
 
     return;
 }
 
+std::string depth_history_string(std::tuple<time_t, float, float> tup)
+{
+    return (std::to_string(std::get<0>(tup)) + " seconds    " + std::to_string(std::get<1>(tup)) + " meters    " + std::to_string(std::get<2>(tup)) + " m/s\n");
+}
 //bottom event handler
 
 //surface event handler

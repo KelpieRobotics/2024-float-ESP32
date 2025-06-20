@@ -19,6 +19,7 @@
 #include "TcpClient.h"
 
 #include <list>
+#include <string>
 
 #define pdSECOND pdMS_TO_TICKS(1000)
 
@@ -86,6 +87,10 @@ void loop(void);
 
 static void ip_event_handler(void* arg, esp_event_base_t event_base,
                                     int32_t event_id, void* event_data);
+
+float velocity(float, float);
+
+std::string depth_history_string(std::tuple<time_t, float, float>);
 
 //Adc::AdcUnit adc_unit {ADC_UNIT};
 
